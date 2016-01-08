@@ -1,0 +1,8 @@
+{
+  "name": "College Football API",
+  "description": "Reparsing ESPN's internal college football API to make it more usable.",
+  "repository": "https://github.com/heroku/node-js-getting-started",
+  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "keywords": ["college football","football","api","college football api"],
+  "image": "heroku/nodejs"
+}

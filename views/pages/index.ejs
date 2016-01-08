@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<title>CFB Scores</title>
+		<style type="text/css">
+		.winning{
+			font-weight: bold;
+		}
+
+    .game-title {
+      text-align:center;
+    }
+		</style>
+    <script>
+    Date.prototype.yyyymmdd = function() {
+      var yyyy = this.getFullYear().toString();
+      var mm = (this.getMonth() + 1).toString();
+      var dd  = this.getDate().toString();
+      return yyyy + (mm[1] ? mm: '0' + mm[0]) + (dd[1] ? dd: '0' + dd[0]);
+    };
+
+    </script>
+	</head>
+
+	<body>
+		<div class="container">
+			<div id="errorAlert" class="alert alert-danger alert-dismissible fade in" role="alert" style="display:none;">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<strong>You're offline.</strong> Please connect to the Internet and hit Cmd+R to refresh the app.
+			</div>
+			<h1 style="margin-top:20px;text-align:center;">CFB Scores</h1>
+			<h4 id="week_number"style="text-align:center;">Loading...</h4>
+			<div id="schedule-area">
+			</div>
+		</div>
+
+		<footer class="bd-footer text-muted" style="text-align:center;" role="contentinfo">
+			<div class="container">
+				<p>Built by <a id="github" href="https://github.com/akeaswaran">@akeaswaran</a>.</p>
+				<p>Currently v0.1. Code licensed <a id="license" href="https://github.com/akeaswaran/cfb-scores/blob/master/LICENSE.md">MIT</a>.</p>
+			</div>
+		</footer>
+	</body>
+	<script>
+		$(document).ready(function() {
+			//setTimeout("location.reload(true);", 30000);
+      $('#errorAlert').hide();
+      var curDate = new Date();
+      var dateString = curDate.yyyymmdd();
+      var url = 'http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?calendartype=blacklist&dates=' + dateString;
+      console.log(url);
+      $.getJSON(url, function(jsonData) {
+        if(jsonData) {
+          $('#week_number').html('Games for ' + (curDate.getMonth() + 1) + '/' + curDate.getDate() + '/' + curDate.getFullYear());
+          for (var i = 0; i < jsonData.events.length; i++) {
+            var game = jsonData.events[i];
+            var home = game.competitions[0].competitors[0];
+            var away = game.competitions[0].competitors[1];
+            var city;
+            var time;
+            var id = game.id;
+            var home_winner;
+            var away_winner;
+            var home_rank;
+            var away_rank;
+
+            if (away.curatedRank.current > 26) {
+              away_rank = '';
+            } else {
+              away_rank = '(' + away.curatedRank.current + ') ';;
+            }
+
+            if (home.curatedRank.current > 26) {
+              home_rank = '';
+            } else {
+              home_rank = '(' + home.curatedRank.current + ') ';
+            }
+
+            if (game.status.type.name == 'STATUS_FINAL' || game.status.type.name == 'STATUS_SCHEDULED') {
+              if(parseInt(home.score) > parseInt(away.score)) {
+                home_winner = ' class="winning"';
+                away_winner = '';
+              } else if (parseInt(home.score) < parseInt(away.score)) {
+                home_winner = '';
+                away_winner = ' class="winning"';
+              } else {
+                away_winner = '';
+                home_winner = '';
+              }
+              time = game.status.type.shortDetail;
+            } else {
+              away_winner = '';
+              home_winner = '';
+              time = 'Q' + game.status.period + ' ' + game.status.displayClock;
+            }
+
+            if (game.competitions[0].venue.address.state) {
+              city = ' (' + game.competitions[0].venue.address.city + ', ' + game.competitions[0].venue.address.state;
+            } else {
+              city = ' (' + game.competitions[0].venue.address.city;
+            }
+
+            $('#schedule-area').append('<table id="game-' + id + '" class="table table-striped table-condensed table-bordered table-responsive"><tbody><tr><th rowspan="3" style="vertical-align:middle;text-align:center;">' + time + '</th><th colspan="2" class="game-title">' + game.competitions[0].notes[0].headline + ' - ' + game.competitions[0].venue.fullName + city + ')</th></tr><tr><td ' + away_winner + '>' + away_rank + away.team.displayName + '</td><td ' + away_winner + ' style="text-align:right;">' + away.score + '</td></tr><tr><td ' + home_winner + '>' + home_rank + home.team.displayName +'</td><td ' + home_winner + ' style="text-align:right;">' + home.score + '</td></tr></tbody></table>');
+          }
+        } else {
+          $('#errorAlert').html('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Error:</strong> There was an error parsing the data from CFB.com. Please hit Cmd+R to refresh the app.');
+          $('#errorAlert').show();
+        }
+      });
+		});
+	</script>
+</html>
