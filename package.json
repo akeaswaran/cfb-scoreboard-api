@@ -4,7 +4,7 @@
   "description": "Reparsing ESPN's internal college football API to make it more usable.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node index.js"
   },
   "dependencies": {
     "ejs": "2.3.3",
