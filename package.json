@@ -9,7 +9,8 @@
   "dependencies": {
     "ejs": "2.3.3",
     "express": "4.13.3",
-    "http": "0.0.0"
+    "http": "0.0.0",
+    "https": "^1.0.0",
   },
   "engines": {
     "node": "0.12.7"
