@@ -430,10 +430,10 @@ app.get('/scoreboard', function(request, response) {
   } else { //historical data
 
       if (validateSeason(request.query.season)) {
-        var url = 'https://collegefootballapi.com/api/1.0/season/' + request.query.season;
+        var url = 'https://collegefootballapi.com/api/1.0/season/' + request.query.season + '/';
         if (request.query.week && request.query.week.length > 0) {
           if (validateWeek(request.query.week)) {
-              url = 'https://collegefootballapi.com/api/1.0/season/' + request.query.season + '/week/' + request.query.week;
+              url = 'https://collegefootballapi.com/api/1.0/season/' + request.query.season + '/week/' + request.query.week + '/';
           }
         }
 
