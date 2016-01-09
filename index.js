@@ -263,7 +263,7 @@ function validateDate(date)
 {
   re = /^\d{4}\d{2}\d{2}$/;
 
-  if(date != '' && !date.match(re)) {
+  if(date !== '' && !date.match(re)) {
     console.log("Invalid date: " + date);
     return false;
   }
@@ -275,24 +275,22 @@ function validateWeek(week)
 {
   re = /^\d{1,2}$/;
 
-  if(week != '' && !week.match(re) && week < 16) {
-    console.log("Invalid week: " + week);
-    return false;
+  if(week !== '' && week.match(re) && week < 16) {
+    return true;
   }
-
-  return true;
+  console.log("Invalid week: " + week);
+  return false;
 }
 
 function validateSeason(season)
 {
   re = /^\d{4}$/;
 
-  if(season != '' && !season.match(re) && season < 2015 && season > 1984) {
-    console.log("Invalid season: " + season);
-    return false;
+  if (season !== '' && season.match(re) && season < 2015 && season > 1984) {
+    return true;
   }
-
-  return true;
+  console.log("Invalid season: " + season);
+  return false;
 }
 
 //Main scoreboard functions
@@ -307,7 +305,7 @@ app.get('/scoreboard', function(request, response) {
 
   var queryString;
   var curDate = new Date();
-  if (!request.query.season && request.query.season.length === 0) { // current data
+  if (!request.query.season) { // current data
     if (request.query.date && validateDate(request.query.date)) {
       queryString = '?calendartype=blacklist&dates=' + request.query.date;
     } else if (request.query.week && validateWeek(request.query.week)) {
@@ -328,14 +326,6 @@ app.get('/scoreboard', function(request, response) {
         if (cfbResponse.events) {
           var apiResponse = {};
           apiResponse.retrievedAt = new Date();
-          if (request.query.date) {
-            apiResponse.date = request.query.date;
-          } else if (request.query.week) {
-            apiResponse.week = request.query.week;
-            apiResponse.season = cfbResponse.events[0].season.year.toString();
-          } else {
-            apiResponse.season = cfbResponse.events[0].season.year.toString();
-          }
           apiResponse.espnUrl = url;
           var games = [];
           for (var i = 0; i < cfbResponse.events.length; i++) {
@@ -415,6 +405,16 @@ app.get('/scoreboard', function(request, response) {
           }
 
           apiResponse.games = games;
+          if (games.length > 0) {
+            if (request.query.date) {
+              apiResponse.date = request.query.date;
+            } else if (request.query.week) {
+              apiResponse.week = request.query.week;
+              apiResponse.season = games[0].season.year.toString();
+            } else {
+              apiResponse.season = games[0].season.year.toString();
+            }
+          }
           response.write(JSON.stringify(apiResponse));
         } else {
           console.log('ERROR: no data');
@@ -431,7 +431,7 @@ app.get('/scoreboard', function(request, response) {
 
       if (validateSeason(request.query.season)) {
         var url = 'https://collegefootballapi.com/api/1.0/season/' + request.query.season + '/';
-        if (request.query.week && request.query.week.length > 0) {
+        if (request.query.week) {
           if (validateWeek(request.query.week)) {
               url = 'https://collegefootballapi.com/api/1.0/season/' + request.query.season + '/week/' + request.query.week + '/';
           }
@@ -510,3 +510,11 @@ app.get('/scoreboard', function(request, response) {
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
+
+module.exports = {
+  validateDate: validateDate,
+  validateWeek: validateWeek,
+  validateSeason: validateSeason,
+  getConference: getConference,
+  getConferenceId: getConferenceId
+};

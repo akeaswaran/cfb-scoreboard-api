@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+- 0.12.7
+script: npm test
+deploy:
+  provider: heroku
+  api_key:
+    secure: DOFAQR49UI88TN8dgQoE2rGKFsqXXxqEXhkFP+V0sCMKFijzfndRkaZXlUQKp/5gQ8+5HGNIUDuFUscFUBSzXkl2oz+pW1JR/6hs7+cTwQSO9E8Dx1OXzn1VVK24h7jK+m2+K5zlX68pHNUGmfzlP1yd6QoVpcDJ6JgfQcOusEXq5bXXHZ0ksp3nFx5bXvyJRCi9V/Lf2oo+0vPIG3CL89GP58EWJGsxHm1rgU+CUHvskoIuriuJvYOftzmVzaa6oX9YtRiq+QqMof+7Jqt6B2MVUWMtWcoRk9jcfAPk9krnabX1iMlWcARNmOhOJBn8mv/QLlMHRM0v2lrqMNgGzJ8HdXQ+ICmMoOV8Uigm7BoHZRyjBOmeG/aAQ5OPJPOl5ZACZKQtS+nbQz3JX0dKaSxG6n+ryTfDmceOLZyURlcjbDIYFH6KU0pfv+VxYqk+z/9ma2BsaThuNPPrLo4V/BXUVHjzJd5mMu/6joZVqABvnfkmk2gR+NX1jV9F/R83VoE8dzp9G536cnVywogRCY40UQPIF+Hyo5QucSD7ELpDtyolx9chwTSa6rZ7+kgMOUp+Qd7PI55AjMRQpH5A5O9pRqMAlbZPMP8fHEUyelHngDPpB7XlkZCkrj5Ex3CvK/i74jTzGKlBlRNVbiKiog3dTtzrQczN8frnlG1Gv1w=
+  app: cfb-scoreboard-api
+  on:
+    repo: akeaswaran/cfb-scoreboard-api

@@ -4,7 +4,8 @@
   "description": "Reparsing ESPN's internal college football API to make it more usable.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "mocha"
   },
   "dependencies": {
     "ejs": "2.3.3",
@@ -25,5 +26,10 @@
     "api",
     "college football api"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "mocha": "^2.3.4",
+    "should": "^8.0.2"
+  }
 }
