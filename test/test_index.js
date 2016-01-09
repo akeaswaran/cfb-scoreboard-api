@@ -11,6 +11,10 @@ describe('validateDate(value)', function() {
       var date = 'dogs123';
       assert.equal(main.validateDate(date), false);
     });
+
+    it('validateDate should return false for null input', function () {
+      assert.equal(main.validateDate(null), false);
+    });
 });
 
 describe('validateWeek(value)', function() {
@@ -29,14 +33,18 @@ describe('validateWeek(value)', function() {
       assert.equal(main.validateWeek(week), false);
     });
 
-    it('validateDate should return false for more than two digit input', function () {
+    it('validateWeek should return false for more than two digit input', function () {
       var week = '123';
       assert.equal(main.validateWeek(week), false);
     });
 
-    it('validateDate should return false for invalid input', function () {
+    it('validateWeek should return false for invalid input', function () {
       var week = 'dogs123';
       assert.equal(main.validateWeek(week), false);
+    });
+
+    it('validateWeek should return false for null input', function () {
+      assert.equal(main.validateWeek(null), false);
     });
 });
 
@@ -64,6 +72,10 @@ describe('validateSeason(value)', function() {
     it('validateSeason should return false for invalid inputs', function () {
       var season = 'dogs123';
       assert.equal(main.validateSeason(season), false);
+    });
+
+    it('validateSeason should return false for null input', function () {
+      assert.equal(main.validateSeason(null), false);
     });
 });
 
