@@ -12,132 +12,152 @@
 	<title>CFB Scoreboard API Documentation</title>
 </head>
 <body>
+		<a name="top"></a>
     <div class="container">
 
       <div class="page-header">
         <h1>CFB Scoreboard API Documentation</h1>
-        <p class="lead">This is v0.1 of the scoreboard API. The current API prefix is <code><a href="https://cfb-scoreboard-api.herokuapp.com/scoreboard">https://cfb-scoreboard-api.herokuapp.com/scoreboard</a></code>.</p>
+        <p class="lead">This is v0.2 of the scoreboard API. The current API prefix is <code><a href="https://cfb-scoreboard-api.herokuapp.com/scoreboard">https://cfb-scoreboard-api.herokuapp.com/scoreboard</a></code>.</p>
 				<a role="button" class="btn btn-default" href="https://github.com/akeaswaran/cfb-scoreboard-api">View on GitHub</a>
 			</div>
+			<div id="nav">
+				<ul style="list-style:none;padding:0;margin:0;">
+				<li><a role="button" class="btn btn-link" href="#notes">Notes</a></li>
+				<li><a role="button" class="btn btn-link" href="#date">By Date</a></li>
+				<li><a role="button" class="btn btn-link" href="#week">By Week</a></li>
+				<li><a role="button" class="btn btn-link" href="#season">By Season</a></li>
+				<li><a role="button" class="btn btn-link" href="#credits">Credits</a></li>
+				</ul>
+			</div>
 
-      <h3>Notes</h3>
-      <p>ESPN used to have a public API for developers to iterate off of, but they shelved that project down a couple of years ago to <i>focus on their own internal products</i>.
-				After some digging through the ESPN site's JavaScript files and on GitHub, I was able to Macgvyer together a URL to access current college football scores and even request them by date.
-				And so, this API was born.</p>
-			<p>This API is designed with FBS schools in mind, but ESPN may return FCS schools in their responses. These schools will not have links to historical data or matchup history.</p>
-			<p>All requests should be made with GET. No authentication needed.</p>
-			<p>Currently, only date and week queries are supported. I hope to bring more functionality to this API soon.</p>
+			<div id="notes">
+				<h3>Notes</h3>
+	      <p>ESPN used to have a public API for developers to iterate off of, but they shelved that project down a couple of years ago to <i>focus on their own internal products</i>.
+					After some digging through the ESPN site's JavaScript files and on GitHub, I was able to Macgvyer together a URL to access current college football scores and even request them by date.
+					And so, this API was born.</p>
+				<p>This API is designed with FBS schools in mind, but ESPN may return FCS schools in their responses. These schools will not have links to historical data or matchup history.</p>
+				<p>All requests should be made with GET. No authentication needed.</p>
+				<p>Currently, only date, week, and season queries are supported. I hope to bring more functionality to this API soon.</p>
+			</div>
 
-      <h3>Retreiving games by date</h3>
-			<pre>...?{string:date}</pre>
-			<h4>Things to Note</h4>
-			<p>When querying by date, convert your date to YYYYMMDD format.</p>
+      <div id="date">
+				<h3>Retreiving games by date</h3>
+				<h4>Parameters</h4>
+				<pre>?date={string:date}</pre>
+				<h4>Description</h4>
+				<p>Queries with this parameter will return the games played or to be played on the date given. When using this parameter, make sure to convert your date to YYYYMMDD format.</p>
+				<p><b>NOTE</b>: This parameter will only return data for the current season. If you want data from previous seasons, see the <a href="#season">seasons</a> parameter.</p>
 
-			<h4>Sample request</h4>
-			<code>https://cfb-scoreboard-api.herokuapp.com/scoreboard?date=20160111</code>
-			<h4>Sample reponse</h4>
-			<pre>{
-    "retrievedAt": "2016-01-08T21:47:44.648Z",
-    "date": "20160111",
-    "espnUrl": "http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?calendartype=blacklist&dates=20160111",
-    "games": [{
-        "id": "400852743",
-        "season": 2015,
-        "date": "2016-01-12T01:30Z",
-        "attendance": 0,
-        "venue": {
-            "name": "University of Phoenix Stadium",
-            "city": "Glendale",
-            "state": "AZ"
-        },
-        "headline": "CFP NATIONAL CHAMPIONSHIP GAME PRES. BY AT&T",
-        "scores": {
-            "home": "0",
-            "away": "0"
-        },
-        "status": {
-            "clock": "0:00",
-            "type": "STATUS_SCHEDULED",
-            "period": "S"
-        },
-        "winner": null,
-        "odds": {
-            "spread": "ALA -6.5",
-            "overUnder": 50.5
-        },
-        "homeTeam": {
-            "id": "228",
-            "location": "Clemson",
-            "name": "Tigers",
-            "abbreviation": "CLEM",
-            "displayName": "Clemson Tigers",
-            "color": "F66733",
-            "logoUrl": "http://a.espncdn.com/i/teamlogos/ncaa/500/228.png",
-            "links": {
-                "teamPage": "http://espn.go.com/college-football/team/_/id/228",
-                "roster": "http://espn.go.com/college-football/team/roster/_/id/228",
-                "statistics": "http://espn.go.com/college-football/team/stats/_/id/228",
-                "schedule": "http://espn.go.com/college-football/team/schedule/_/id/228",
-                "photos": "http://espn.go.com/college-football/team/photos/_/id/228",
-                "stadium": "http://espn.go.com/college-football/team/stadium/_/id/228",
-                "awards": "http://espn.go.com/college-football/awards/_/team/228",
-                "history": "https://collegefootballapi.com/api/1.0/teams/clemson"
-            },
-            "conference": {
-                "abbreviation": "ACC",
-                "name": "Atlantic Coast Conference"
-            },
-            "rank": 1,
-            "records": {
-                "overall": "14-0",
-                "conference": "7-0",
-                "home": "5-0",
-                "away": "8-0"
-            }
-        },
-        "awayTeam": {
-            "id": "333",
-            "location": "Alabama",
-            "name": "Crimson Tide",
-            "abbreviation": "ALA",
-            "displayName": "Alabama Crimson Tide",
-            "color": "690014",
-            "logoUrl": "http://a.espncdn.com/i/teamlogos/ncaa/500/333.png",
-            "links": {
-                "teamPage": "http://espn.go.com/college-football/team/_/id/333",
-                "roster": "http://espn.go.com/college-football/team/roster/_/id/333",
-                "statistics": "http://espn.go.com/college-football/team/stats/_/id/333",
-                "schedule": "http://espn.go.com/college-football/team/schedule/_/id/333",
-                "photos": "http://espn.go.com/college-football/team/photos/_/id/333",
-                "stadium": "http://espn.go.com/college-football/team/stadium/_/id/333",
-                "awards": "http://espn.go.com/college-football/awards/_/team/333",
-                "history": "https://collegefootballapi.com/api/1.0/teams/alabama"
-            },
-            "conference": {
-                "abbreviation": "SEC",
-                "name": "Southeastern Conference"
-            },
-            "rank": 2,
-            "records": {
-                "overall": "13-1",
-                "conference": "6-1",
-                "home": "4-0",
-                "away": "7-1"
-            }
-        },
-        "matchupUrl": "https://collegefootballapi.com/api/1.0/matchup/clemson/alabama"
-    }]
-}</pre>
+				<h4>Sample request</h4>
+				<code>https://cfb-scoreboard-api.herokuapp.com/scoreboard?date=20160111</code>
+				<h4>Sample reponse</h4>
+				<pre>
+{
+  "retrievedAt": "2016-01-08T21:47:44.648Z",
+  "date": "20160111",
+  "espnUrl": "http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?calendartype=blacklist&dates=20160111",
+  "games": [{
+      "id": "400852743",
+      "season": 2015,
+      "date": "2016-01-12T01:30Z",
+      "attendance": 0,
+      "venue": {
+          "name": "University of Phoenix Stadium",
+          "city": "Glendale",
+          "state": "AZ"
+      },
+      "headline": "CFP NATIONAL CHAMPIONSHIP GAME PRES. BY AT&T",
+      "scores": {
+          "home": "0",
+          "away": "0"
+      },
+      "status": {
+          "clock": "0:00",
+          "type": "STATUS_SCHEDULED",
+          "period": "S"
+      },
+      "winner": null,
+      "odds": {
+          "spread": "ALA -6.5",
+          "overUnder": 50.5
+      },
+      "homeTeam": {
+          "id": "228",
+          "location": "Clemson",
+          "name": "Tigers",
+          "abbreviation": "CLEM",
+          "displayName": "Clemson Tigers",
+          "color": "F66733",
+          "logoUrl": "http://a.espncdn.com/i/teamlogos/ncaa/500/228.png",
+          "links": {
+              "teamPage": "http://espn.go.com/college-football/team/_/id/228",
+              "roster": "http://espn.go.com/college-football/team/roster/_/id/228",
+              "statistics": "http://espn.go.com/college-football/team/stats/_/id/228",
+              "schedule": "http://espn.go.com/college-football/team/schedule/_/id/228",
+              "photos": "http://espn.go.com/college-football/team/photos/_/id/228",
+              "stadium": "http://espn.go.com/college-football/team/stadium/_/id/228",
+              "awards": "http://espn.go.com/college-football/awards/_/team/228",
+              "history": "https://collegefootballapi.com/api/1.0/teams/clemson"
+          },
+          "conference": {
+              "abbreviation": "ACC",
+              "name": "Atlantic Coast Conference"
+          },
+          "rank": 1,
+          "records": {
+              "overall": "14-0",
+              "conference": "7-0",
+              "home": "5-0",
+              "away": "8-0"
+          }
+      },
+      "awayTeam": {
+          "id": "333",
+          "location": "Alabama",
+          "name": "Crimson Tide",
+          "abbreviation": "ALA",
+          "displayName": "Alabama Crimson Tide",
+          "color": "690014",
+          "logoUrl": "http://a.espncdn.com/i/teamlogos/ncaa/500/333.png",
+          "links": {
+              "teamPage": "http://espn.go.com/college-football/team/_/id/333",
+              "roster": "http://espn.go.com/college-football/team/roster/_/id/333",
+              "statistics": "http://espn.go.com/college-football/team/stats/_/id/333",
+              "schedule": "http://espn.go.com/college-football/team/schedule/_/id/333",
+              "photos": "http://espn.go.com/college-football/team/photos/_/id/333",
+              "stadium": "http://espn.go.com/college-football/team/stadium/_/id/333",
+              "awards": "http://espn.go.com/college-football/awards/_/team/333",
+              "history": "https://collegefootballapi.com/api/1.0/teams/alabama"
+          },
+          "conference": {
+              "abbreviation": "SEC",
+              "name": "Southeastern Conference"
+          },
+          "rank": 2,
+          "records": {
+              "overall": "13-1",
+              "conference": "6-1",
+              "home": "4-0",
+              "away": "7-1"
+          }
+      },
+      "matchupUrl": "https://collegefootballapi.com/api/1.0/matchup/clemson/alabama"
+  }]
+}
+</pre>
+			</div>
 
-			<h3>Retreiving games by week</h3>
-			<pre>...?{integer:week}</pre>
-			<h4>Things to Note</h4>
-			<p>This does not contain historic data (yet). Queries with this parameter will return data only from the current season. Check back here soon for progress updates.</p>
+			<div id="week">
+				<h3>Retreiving games by week</h3>
+				<h4>Parameters</h4>
+				<pre>?week={integer:week}</pre>
+				<h4>Description</h4>
+				<p>Queries with this parameter will return games played or to be played on the given week of the current season. If you want data from previous seasons, see the <a href="#season">seasons</a> parameter.</p>
 
-			<h4>Sample request</h4>
-			<code>https://cfb-scoreboard-api.herokuapp.com/scoreboard?week=10</code>
-			<h4>Sample reponse</h4>
-			<pre>
+				<h4>Sample request</h4>
+				<code>https://cfb-scoreboard-api.herokuapp.com/scoreboard?week=10</code>
+				<h4>Sample reponse</h4>
+				<pre>
 {
   "retrievedAt": "2016-01-09T00:28:41.048Z",
   "week": "10",
@@ -230,18 +250,77 @@
       "matchupUrl": "https://collegefootballapi.com/api/1.0/matchup/toledo/n_illinois"
     }, ...
   ]
-}</pre>
-      <h3>Credits</h3>
-      <p><a href="https://collegefootballapi.com">College Football API</a> for historical data.</p>
-      <p><a href="https://espn.go.com">ESPN.com</a> for shutting down their public API and inspiring me to build this off their new one.</p>
-			<p><a href="https://heroku.com">Heroku</a> for hosting.</p>
-      <p><a href="https://github.com/epmatsw">epmatsw</a>'s <a href="https://github.com/epmatsw/CFBHistory">CFBHistory</a> project for its list of College Football API team identifiers.</p>
-			<p><a href="https://reddit.com/r/cfb">/r/CFB</a>'s <a href="https://www.reddit.com/r/CFB/wiki/abbreviations">wiki</a> for a list of FBS team abbreviations.</p>
+}
+</pre>
 
-			<footer class="bd-footer text-muted" style="text-align:center;" role="contentinfo">
+			</div>
+			<div id="season">
+				<h3>Retreiving games by season</h3>
+				<h4>Parameters</h4>
+				<pre>?season={integer:season}</pre>
+				<pre>?season={integer:season}&week={integer:week}</pre>
+				<h4>Description</h4>
+				<p>Queries with these paramters will return historical data for the season and week provided. Historical data is available from 1985 to 2014 via <a href="https://collegefootballapi.com">College Football API</a>.</p>
+				<p><b>NOTE</b>: While the schema for games is the same as that for the latest data from ESPN, there is not as much metadata avilable for each game.
+					This is mainly due to me not being able to successfully write asynchronus requests and retrieve that data.
+					As a stopgap, I have included the URL to query for that data. If you know how to fix this issue, please submit a <a href="https://github.com/akeaswaran/cfb-scoreboard-api/pulls">pull request</a>.</p>
+				<h4>Sample request</h4>
+				<code>http://cfb-scoreboard-api.herokuapp.com/scoreboard?season=2014&week=10</code>
+				<h4>Sample reponse</h4>
+				<pre>
+{
+	"retrievedAt": "2016-01-09T03:40:17.596Z",
+	"week": "10",
+	"season": "2014",
+	"cfbUrl": "https://collegefootballapi.com/api/1.0/season/2014/week/10",
+	"games": [
+	  {
+	    "id": 103896,
+	    "season": 2014,
+	    "date": "2014-10-31T04:00:00.000Z",
+	    "scores": {
+	      "home": 14,
+	      "away": 38
+	    },
+	    "winner": "away",
+	    "status": {
+	      "clock": "0:00",
+	      "type": "FINAL",
+	      "period": "F"
+	    },
+	    "awayTeam": {
+	      "abbreviation": "CIN",
+	      "links": {
+	        "details": "https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=cincinnati"
+	      }
+	    },
+	    "homeTeam": {
+	      "abbreviation": "TULN",
+	      "links": {
+	        "details": "https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=tulane"
+	      }
+	    },
+	    "matchupUrl": "https://collegefootballapi.com/api/1.0/matchup/tulane/cincinnati"
+	  }, ...
+	]
+}
+				</pre>
+			</div>
+      <div id="credits">
+				<h3>Credits</h3>
+	      <p><a href="https://collegefootballapi.com">College Football API</a> for historical data.</p>
+	      <p><a href="https://espn.go.com">ESPN.com</a> for shutting down their public API and inspiring me to build this off their new one.</p>
+				<p><a href="https://heroku.com">Heroku</a> for hosting this app.</p>
+				<p><a href="https://fieldbook.com">Fieldbook</a> for hosting the database of team details.</p>
+	      <p><a href="https://github.com/epmatsw">epmatsw</a>'s <a href="https://github.com/epmatsw/CFBHistory">CFBHistory</a> project for its list of College Football API team identifiers.</p>
+				<p><a href="https://reddit.com/r/cfb">/r/CFB</a>'s <a href="https://www.reddit.com/r/CFB/wiki/abbreviations">wiki</a> for a list of FBS team abbreviations.</p>
+			</div>
+
+			<footer class="bd-footer text-muted" style="text-align:center;padding-bottom:20px;" role="contentinfo">
 			<div class="container">
 				<p>Built by <a id="github" href="https://github.com/akeaswaran">@akeaswaran</a>.</p>
-				<p>Currently v0.1. Code licensed <a id="license" href="https://github.com/akeaswaran/cfb-scoreboard-api/blob/master/LICENSE.md">MIT</a>.</p>
+				<p>Currently v0.2. Code licensed <a id="license" href="https://github.com/akeaswaran/cfb-scoreboard-api/blob/master/LICENSE.md">MIT</a>.</p>
+				<a href="#top" style="text-align:right;">Back to top</a>
 			</div>
 		</footer>
     </div>
