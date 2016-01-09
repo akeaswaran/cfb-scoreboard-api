@@ -1,7 +1,7 @@
 //Static variables
 var express = require('express');
 var http = require('http');
-var https = require('https');
+var request = require('request');
 var app = express();
 var teamNames = {
   "air_force": "AFA",
@@ -260,11 +260,117 @@ function createESPNTeam(competitorDict) {
   return team;
 }
 
+function createESPNGame(gameEvent) {
+  var game = {};
+
+  //Basic game data
+  game.id = gameEvent.id;
+  game.season = gameEvent.season.year;
+  game.date = gameEvent.date;
+  game.attendance = gameEvent.competitions[0].attendance;
+  game.venue = {};
+  game.venue.name = gameEvent.competitions[0].venue.fullName;
+  game.venue.city = gameEvent.competitions[0].venue.address.city;
+  game.venue.state = gameEvent.competitions[0].venue.address.state;
+  if (gameEvent.competitions[0].notes && gameEvent.competitions[0].notes.length > 0) {
+    game.headline = gameEvent.competitions[0].notes[0].headline;
+  } else {
+    game.headline = '';
+  }
+  game.scores = {};
+  game.scores.home = gameEvent.competitions[0].competitors[0].score;
+  game.scores.away = gameEvent.competitions[0].competitors[1].score;
+
+  //Game Status
+  game.status = {};
+  game.status.clock = gameEvent.status.displayClock;
+  game.status.type = gameEvent.status.type.name;
+  if (game.status.type == 'STATUS_FINAL' || game.status.type == 'STATUS_SCHEDULED') {
+    if (parseInt(game.scores.home) > parseInt(game.scores.away)) {
+      game.winner = 'home';
+    } else if (parseInt(game.scores.home) < parseInt(game.scores.away)) {
+      game.winner = 'away';
+    } else {
+      game.winner = null;
+    }
+
+    if (game.status.type == 'STATUS_FINAL') {
+      game.status.period = 'F';
+      if (gameEvent.status.period > 4) {
+        game.status.period = 'F/' + (gameEvent.status.period - 4) + 'OT';
+      }
+    } else {
+      game.status.period = 'S';
+    }
+  } else {
+    if (gameEvent.status.period > 5) {
+      game.status.period = (gameEvent.status.period - 4) + 'OT';
+    } else {
+      game.status.period = 'Q' + gameEvent.status.period;
+    }
+  }
+
+  //Odds
+  game.odds = {};
+  if (gameEvent.competitions[0].odds) {
+    game.odds.spread = gameEvent.competitions[0].odds[0].details;
+    game.odds.overUnder = gameEvent.competitions[0].odds[0].overUnder;
+  } else {
+    game.odds.spread = 'N/A';
+    game.odds.overUnder = 'N/A';
+  }
+
+  //Teams
+  game.homeTeam = createESPNTeam(gameEvent.competitions[0].competitors[0]);
+  game.awayTeam = createESPNTeam(gameEvent.competitions[0].competitors[1]);
+
+  var awayId = getTeamId(game.awayTeam.abbreviation);
+  var homeId = getTeamId(game.homeTeam.abbreviation);
+  if (homeId && awayId) {
+    game.matchupUrl = 'https://collegefootballapi.com/api/1.0/matchup/' + homeId + '/' + awayId;
+  } else {
+    game.matchupUrl = '';
+  }
+  return game;
+}
+
+function createCFBGame(apiGame) {
+  var createdGame = {};
+  createdGame.id = apiGame.id;
+  createdGame.season = apiGame.season.season;
+  createdGame.date = (new Date(apiGame.date.year, (apiGame.date.month - 1), apiGame.date.day, 0, 0, 0, 0)).toISOString();
+
+  createdGame.scores = {};
+  createdGame.scores.home = apiGame.results.home_score;
+  createdGame.scores.away = apiGame.results.away_score;
+  if (parseInt(createdGame.scores.home) > parseInt(createdGame.scores.away)) {
+    createdGame.winner = 'home';
+  } else if (parseInt(createdGame.scores.home) < parseInt(createdGame.scores.away)) {
+    createdGame.winner = 'away';
+  } else {
+    createdGame.winner = null;
+  }
+
+  createdGame.status = {};
+  createdGame.status.clock = '0:00';
+  createdGame.status.type = 'FINAL';
+  createdGame.status.period = 'F';
+
+  var awayId = apiGame.teams.away_team;
+  var homeId = apiGame.teams.home_team;
+
+  createdGame.awayTeam = {'abbreviation' : getTeamAbbreviation(awayId), 'links' : {'details':'https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=' + awayId}};
+  createdGame.homeTeam = {'abbreviation' : getTeamAbbreviation(homeId), 'links' : {'details':'https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=' + homeId}};
+
+  createdGame.matchupUrl = 'https://collegefootballapi.com/api/1.0/matchup/' + homeId + '/' + awayId;
+  return createdGame;
+}
+
 function validateDate(date)
 {
   re = /^\d{4}\d{2}\d{2}$/;
 
-  if(date !== '' && date.match(re)) {
+  if(date && date !== '' && date.match(re)) {
     return true;
   }
 
@@ -276,7 +382,7 @@ function validateWeek(week)
 {
   re = /^\d{1,2}$/;
 
-  if(week !== '' && week.match(re) && week < 16) {
+  if(week && week !== '' && week.match(re) && week < 16) {
     return true;
   }
 
@@ -288,7 +394,7 @@ function validateSeason(season)
 {
   re = /^\d{4}$/;
 
-  if (season !== '' && season.match(re) && season < 2015 && season > 1984) {
+  if (season && season !== '' && season.match(re) && season < 2015 && season > 1984) {
     return true;
   }
   console.log("Invalid season: " + season);
@@ -331,77 +437,7 @@ app.get('/scoreboard', function(request, response) {
           var games = [];
           for (var i = 0; i < cfbResponse.events.length; i++) {
             var gameEvent = cfbResponse.events[i];
-            var game = {};
-
-            //Basic game data
-            game.id = gameEvent.id;
-            game.season = gameEvent.season.year;
-            game.date = gameEvent.date;
-            game.attendance = gameEvent.competitions[0].attendance;
-            game.venue = {};
-            game.venue.name = gameEvent.competitions[0].venue.fullName;
-            game.venue.city = gameEvent.competitions[0].venue.address.city;
-            game.venue.state = gameEvent.competitions[0].venue.address.state;
-            if (gameEvent.competitions[0].notes && gameEvent.competitions[0].notes.length > 0) {
-              game.headline = gameEvent.competitions[0].notes[0].headline;
-            } else {
-              game.headline = '';
-            }
-            game.scores = {};
-            game.scores.home = gameEvent.competitions[0].competitors[0].score;
-            game.scores.away = gameEvent.competitions[0].competitors[1].score;
-
-            //Game Status
-            game.status = {};
-            game.status.clock = gameEvent.status.displayClock;
-            game.status.type = gameEvent.status.type.name;
-            if (game.status.type == 'STATUS_FINAL' || game.status.type == 'STATUS_SCHEDULED') {
-              if (parseInt(game.scores.home) > parseInt(game.scores.away)) {
-                game.winner = 'home';
-              } else if (parseInt(game.scores.home) < parseInt(game.scores.away)) {
-                game.winner = 'away';
-              } else {
-                game.winner = null;
-              }
-
-              if (game.status.type == 'STATUS_FINAL') {
-                game.status.period = 'F';
-                if (gameEvent.status.period > 4) {
-                  game.status.period = 'F/' + (gameEvent.status.period - 4) + 'OT';
-                }
-              } else {
-                game.status.period = 'S';
-              }
-            } else {
-              if (gameEvent.status.period > 5) {
-                game.status.period = (gameEvent.status.period - 4) + 'OT';
-              } else {
-                game.status.period = 'Q' + gameEvent.status.period;
-              }
-            }
-
-            //Odds
-            game.odds = {};
-            if (gameEvent.competitions[0].odds) {
-              game.odds.spread = gameEvent.competitions[0].odds[0].details;
-              game.odds.overUnder = gameEvent.competitions[0].odds[0].overUnder;
-            } else {
-              game.odds.spread = 'N/A';
-              game.odds.overUnder = 'N/A';
-            }
-
-            //Teams
-            game.homeTeam = createESPNTeam(gameEvent.competitions[0].competitors[0]);
-            game.awayTeam = createESPNTeam(gameEvent.competitions[0].competitors[1]);
-
-            var awayId = getTeamId(game.awayTeam.abbreviation);
-            var homeId = getTeamId(game.homeTeam.abbreviation);
-            if (homeId && awayId) {
-              game.matchupUrl = 'https://collegefootballapi.com/api/1.0/matchup/' + homeId + '/' + awayId;
-            } else {
-              game.matchupUrl = '';
-            }
-
+            var game = createESPNGame(gameEvent);
             games.push(game);
           }
 
@@ -411,100 +447,103 @@ app.get('/scoreboard', function(request, response) {
               apiResponse.date = request.query.date;
             } else if (request.query.week) {
               apiResponse.week = request.query.week;
-              apiResponse.season = games[0].season.year.toString();
+              apiResponse.season = games[0].season.toString();
             } else {
-              apiResponse.season = games[0].season.year.toString();
+              apiResponse.season = games[0].season.toString();
             }
           }
-          response.write(JSON.stringify(apiResponse));
+          response.write(JSON.stringify(apiResponse, null, 2));
+          response.end();
         } else {
           response.write('{"code":404,"detail": "error: data not found"}');
+          response.end();
         }
-
-        response.end();
       });
     }).on('error', function(e) {
       console.log('Got an error: ', e);
       response.write('{"code":404,"detail":' + e + '}');
+      response.end();
     });
   } else { //historical data
-
-      if (validateSeason(request.query.season)) {
-        var url = 'https://collegefootballapi.com/api/1.0/season/' + request.query.season + '/';
-        if (request.query.week) {
-          if (validateWeek(request.query.week)) {
-              url = 'https://collegefootballapi.com/api/1.0/season/' + request.query.season + '/week/' + request.query.week;
-          }
-        }
-
-        https.get(url, function(res) {
-          var body = '';
-          res.on('data', function(chunk) {
-            body += chunk;
-          });
-
-          res.on('end', function() {
-            var cfbResponse = JSON.parse(body);
-            var apiResponse = {};
-            var createdGames = [];
-            apiResponse.retrievedAt = new Date();
-            if (request.query.date) {
-              apiResponse.date = request.query.date;
-            } else if (request.query.week) {
-              apiResponse.week = request.query.week;
-              apiResponse.season = request.query.season;
-            } else {
-              apiResponse.season = request.query.season;
-            }
-            apiResponse.cfbUrl = url;
-            if (cfbResponse.games) {
-              for (var i = 0; i < cfbResponse.games.length; i++) {
-                var apiGame = cfbResponse.games[i];
-                var createdGame = {};
-                createdGame.id = apiGame.id;
-                createdGame.season = apiGame.season.season;
-                createdGame.date = (new Date(apiGame.date.year, (apiGame.date.month - 1), apiGame.date.day, 0, 0, 0, 0)).toISOString();
-
-                createdGame.scores = {};
-                createdGame.scores.home = apiGame.results.home_score;
-                createdGame.scores.away = apiGame.results.away_score;
-                if (parseInt(createdGame.scores.home) > parseInt(createdGame.scores.away)) {
-                  createdGame.winner = 'home';
-                } else if (parseInt(createdGame.scores.home) < parseInt(createdGame.scores.away)) {
-                  createdGame.winner = 'away';
-                } else {
-                  createdGame.winner = null;
-                }
-
-                createdGame.status = {};
-                createdGame.status.clock = '0:00';
-                createdGame.status.type = 'FINAL';
-                createdGame.status.period = 'F';
-
-                var awayId = apiGame.teams.away_team;
-                var homeId = apiGame.teams.home_team;
-
-                createdGame.awayTeam = {'abbreviation' : getTeamAbbreviation(awayId), 'links' : {'details':'https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=' + awayId}};
-                createdGame.homeTeam = {'abbreviation' : getTeamAbbreviation(homeId), 'links' : {'details':'https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=' + homeId}};
-
-                createdGame.matchupUrl = 'https://collegefootballapi.com/api/1.0/matchup/' + homeId + '/' + awayId;
-                createdGames.push(createdGame);
-              }
-              apiResponse.games = createdGames;
-              response.write(JSON.stringify(apiResponse));
-            } else {
-              console.log('ERROR: no data');
-              response.write('{"code":404,"detail": "error: data not found"}');
-            }
-            response.end();
-          });
-        }).on('error', function(e) {
-          console.log('Got an error: ', e);
-          response.write('{"code":404,"detail":' + e + '}');
-        });
+      if (validateSeason(request.query.season) && validateWeek(request.query.week)) {
+        fetchCFBHistory(request.query.season, request.query.week, response);
+      } else if (validateSeason(request.query.season) && !validateWeek(request.query.week)) {
+        fetchCFBHistory(request.query.season, null, response);
+      } else {
+        response.write('{"code":404,"detail": "error: data not found"}');
+        response.end();
       }
-    }
+  }
 });
+
+function fetchCFBHistory(season, week, orgResponse) {
+  var url = 'https://collegefootballapi.com/api/1.0/season/' + season + '/';
+  if (week) {
+      url = 'https://collegefootballapi.com/api/1.0/season/' + season + '/week/' + week;
+  }
+
+  request(url, function(error, response, body) {
+    if (season && week) {
+      if (!error) {
+        var cfbResponse = JSON.parse(body);
+        var apiResponse = {};
+        var createdGames = [];
+        apiResponse.retrievedAt = new Date();
+        apiResponse.week = week;
+        apiResponse.season = season;
+        apiResponse.cfbUrl = url;
+
+        if (cfbResponse.games) {
+          for (var i = 0; i < cfbResponse.games.length; i++) {
+            var apiGame = cfbResponse.games[i];
+            createdGame = createCFBGame(apiGame);
+            createdGames.push(createdGame);
+          }
+          apiResponse.games = createdGames;
+        } else {
+          console.log('ERROR: no data');
+          apiResponse = {"code":404,"detail": "error: data not found"};
+        }
+        orgResponse.write(JSON.stringify(apiResponse, null, 2));
+        orgResponse.end();
+      } else {
+        console.log('ERROR: ' + error);
+        orgResponse.write(JSON.stringify({"code":error.code,'detail': 'error: ' + error}));
+        orgResponse.end();
+      }
+    } else if (season && !week) {
+      if (!error) {
+        var cfbResponse = JSON.parse(body);
+        var apiResponse = {};
+        var createdGames = [];
+        apiResponse.retrievedAt = new Date();
+        apiResponse.season = season;
+        apiResponse.cfbUrl = url;
+        if (cfbResponse.games) {
+          for (var i = 0; i < cfbResponse.games.length; i++) {
+            var apiGame = cfbResponse.games[i];
+            createdGame = createCFBGame(apiGame);
+            createdGames.push(createdGame);
+          }
+          apiResponse.games = createdGames;
+        } else {
+          console.log('ERROR: no data');
+          apiResponse = {"code":404,"detail": "error: data not found"};
+        }
+        orgResponse.write(JSON.stringify(apiResponse, null, 2));
+        orgResponse.end();
+      } else {
+        console.log('ERROR: ' + error);
+        orgResponse.write(JSON.stringify({"code":error.code,'detail': 'error: ' + error}));
+        orgResponse.end();
+      }
+    } else {
+      console.log('ERROR: no data');
+      orgResponse.write(JSON.stringify({"code":404,"detail": "error: data not found"}));
+      orgResponse.end();
+    }
+  });
+}
 
 //some port listening thingy
 app.listen(app.get('port'), function() {
@@ -521,5 +560,7 @@ module.exports = {
   getTeamAbbreviation: getTeamAbbreviation,
   createESPNTeam: createESPNTeam,
   yyyymmdd: Date.prototype.yyyymmdd,
-  formTeamHistoryUrl: formTeamHistoryUrl
+  formTeamHistoryUrl: formTeamHistoryUrl,
+  createESPNGame: createESPNGame,
+  createCFBGame: createCFBGame,
 };
