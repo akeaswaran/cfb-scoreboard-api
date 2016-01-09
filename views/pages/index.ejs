@@ -16,20 +16,20 @@
 
       <div class="page-header">
         <h1>CFB Scoreboard API Documentation</h1>
-        <p class="lead">This is v0.1.2 of the scoreboard API. The current API prefix is <code><a href="https://cfb-scoreboard-api.herokuapp.com/scoreboard">https://cfb-scoreboard-api.herokuapp.com/scoreboard</a></code>.</p>
+        <p class="lead">This is v0.1 of the scoreboard API. The current API prefix is <code><a href="https://cfb-scoreboard-api.herokuapp.com/scoreboard">https://cfb-scoreboard-api.herokuapp.com/scoreboard</a></code>.</p>
 				<a role="button" class="btn btn-default" href="https://github.com/akeaswaran/cfb-scoreboard-api">View on GitHub</a>
 			</div>
 
       <h3>Notes</h3>
-      <p>ESPN is dumb. They used to have a public API for developers to iterate off of, but they've shelved that project down a couple of years ago to <i>focus on their own internal products</i>.
+      <p>ESPN used to have a public API for developers to iterate off of, but they shelved that project down a couple of years ago to <i>focus on their own internal products</i>.
 				After some digging through the ESPN site's JavaScript files and on GitHub, I was able to Macgvyer together a URL to access current college football scores and even request them by date.
 				And so, this API was born.</p>
 			<p>This API is designed with FBS schools in mind, but ESPN may return FCS schools in their responses. These schools will not have links to historical data or matchup history.</p>
 			<p>All requests should be made with GET. No authentication needed.</p>
-			<p>Currently, only querying by date is supported. I hope to bring more functionality to this API soon.</p>
+			<p>Currently, only date and week queries are supported. I hope to bring more functionality to this API soon.</p>
 
       <h3>Retreiving games by date</h3>
-			<pre>.../{string:date}</pre>
+			<pre>...?{string:date}</pre>
 			<h4>Things to Note</h4>
 			<p>When querying by date, convert your date to YYYYMMDD format.</p>
 
@@ -38,8 +38,8 @@
 			<h4>Sample reponse</h4>
 			<pre>{
     "retrievedAt": "2016-01-08T21:47:44.648Z",
-    "queriedDate": "20160111",
-    "queriedUrl": "http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?calendartype=blacklist&dates=20160111",
+    "date": "20160111",
+    "espnUrl": "http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?calendartype=blacklist&dates=20160111",
     "games": [{
         "id": "400852743",
         "season": 2015,
@@ -129,17 +129,119 @@
     }]
 }</pre>
 
+			<h3>Retreiving games by week</h3>
+			<pre>...?{integer:week}</pre>
+			<h4>Things to Note</h4>
+			<p>This does not contain historic data (yet). Queries with this parameter will return data only from the current season. Check back here soon for progress updates.</p>
+
+			<h4>Sample request</h4>
+			<code>https://cfb-scoreboard-api.herokuapp.com/scoreboard?week=10</code>
+			<h4>Sample reponse</h4>
+			<pre>
+{
+  "retrievedAt": "2016-01-09T00:28:41.048Z",
+  "week": "10",
+  "season": "2015",
+  "espnUrl": "http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?week=10",
+  "games": [
+    {
+      "id": "400787343",
+      "season": 2015,
+      "date": "2015-11-04T01:00Z",
+      "attendance": 23089,
+      "venue": {
+        "name": "Glass Bowl",
+        "city": "Toledo",
+        "state": "OH"
+      },
+      "headline": "",
+      "scores": {
+        "home": "27",
+        "away": "32"
+      },
+      "status": {
+        "clock": "0:00",
+        "type": "STATUS_FINAL",
+        "period": "F"
+      },
+      "winner": "away",
+      "odds": {
+        "spread": "N/A",
+        "overUnder": "N/A"
+      },
+      "homeTeam": {
+        "id": "2649",
+        "location": "Toledo",
+        "name": "Rockets",
+        "abbreviation": "TOL",
+        "displayName": "Toledo Rockets",
+        "color": "00488F",
+        "logoUrl": "http://a.espncdn.com/i/teamlogos/ncaa/500/2649.png",
+        "links": {
+          "clubhouse": "http://espn.go.com/college-football/team/_/id/2649",
+          "roster": "http://espn.go.com/college-football/team/roster/_/id/2649",
+          "stats": "http://espn.go.com/college-football/team/stats/_/id/2649",
+          "schedule": "http://espn.go.com/college-football/team/schedule/_/id/2649",
+          "photos": "http://espn.go.com/college-football/team/photos/_/id/2649",
+          "awards": "http://espn.go.com/college-football/awards/_/team/2649",
+          "history": "https://collegefootballapi.com/api/1.0/teams/toledo"
+        },
+        "conference": {
+          "abbreviation": "MAC",
+          "name": "Mid-American Conference"
+        },
+        "rank": 24,
+        "records": {
+          "overall": "7-1",
+          "conference": "4-1",
+          "home": "3-0",
+          "away": "4-1"
+        }
+      },
+      "awayTeam": {
+        "id": "2459",
+        "location": "Northern Illinois",
+        "name": "Huskies",
+        "abbreviation": "NIU",
+        "displayName": "Northern Illinois Huskies",
+        "color": "F1122C",
+        "logoUrl": "http://a.espncdn.com/i/teamlogos/ncaa/500/2459.png",
+        "links": {
+          "clubhouse": "http://espn.go.com/college-football/team/_/id/2459",
+          "roster": "http://espn.go.com/college-football/team/roster/_/id/2459",
+          "stats": "http://espn.go.com/college-football/team/stats/_/id/2459",
+          "schedule": "http://espn.go.com/college-football/team/schedule/_/id/2459",
+          "photos": "http://espn.go.com/college-football/team/photos/_/id/2459",
+          "awards": "http://espn.go.com/college-football/awards/_/team/2459",
+          "history": "https://collegefootballapi.com/api/1.0/teams/n_illinois"
+        },
+        "conference": {
+          "abbreviation": "MAC",
+          "name": "Mid-American Conference"
+        },
+        "rank": 99,
+        "records": {
+          "overall": "6-3",
+          "conference": "4-0",
+          "home": "2-3",
+          "away": "4-1"
+        }
+      },
+      "matchupUrl": "https://collegefootballapi.com/api/1.0/matchup/toledo/n_illinois"
+    }, ...
+  ]
+}</pre>
       <h3>Credits</h3>
       <p><a href="https://collegefootballapi.com">College Football API</a> for historical data.</p>
       <p><a href="https://espn.go.com">ESPN.com</a> for shutting down their public API and inspiring me to build this off their new one.</p>
 			<p><a href="https://heroku.com">Heroku</a> for hosting.</p>
-      <p><a href="https://github.com/epmatsw">epmatsw</a>'s<a href="https://github.com/epmatsw/CFBHistory">CFBHistory</a> project for its list of College Football API team identifiers.</p>
+      <p><a href="https://github.com/epmatsw">epmatsw</a>'s <a href="https://github.com/epmatsw/CFBHistory">CFBHistory</a> project for its list of College Football API team identifiers.</p>
 			<p><a href="https://reddit.com/r/cfb">/r/CFB</a>'s <a href="https://www.reddit.com/r/CFB/wiki/abbreviations">wiki</a> for a list of FBS team abbreviations.</p>
 
 			<footer class="bd-footer text-muted" style="text-align:center;" role="contentinfo">
 			<div class="container">
 				<p>Built by <a id="github" href="https://github.com/akeaswaran">@akeaswaran</a>.</p>
-				<p>Currently v0.1.2. Code licensed <a id="license" href="https://github.com/akeaswaran/cfb-scoreboard-api/blob/master/LICENSE.md">MIT</a>.</p>
+				<p>Currently v0.1. Code licensed <a id="license" href="https://github.com/akeaswaran/cfb-scoreboard-api/blob/master/LICENSE.md">MIT</a>.</p>
 			</div>
 		</footer>
     </div>

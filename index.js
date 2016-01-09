@@ -200,13 +200,13 @@ function createTeam(competitorDict) {
   team.color = competitorDict.team.color;
   team.logoUrl = competitorDict.team.logo;
   team.links = {};
-  team.links.teamPage = competitorDict.team.links[0].href;
-  team.links.roster = competitorDict.team.links[1].href;
-  team.links.statistics = competitorDict.team.links[2].href;
-  team.links.schedule = competitorDict.team.links[3].href;
-  team.links.photos = competitorDict.team.links[4].href;
-  team.links.stadium = competitorDict.team.links[5].href;
-  team.links.awards = competitorDict.team.links[6].href;
+  if (competitorDict.team.links && competitorDict.team.links.length > 0) {
+    for (var i = 0; i < competitorDict.team.links.length; i++) {
+      var linkDict = competitorDict.team.links[i];
+      team.links[linkDict.rel[0]] = linkDict.href;
+    }
+  }
+
   if (getTeamId(team.abbreviation)) {
     team.links.history = formTeamHistoryUrl(team.abbreviation);
   } else {
@@ -215,14 +215,40 @@ function createTeam(competitorDict) {
   team.conference = getConference(competitorDict.team.conferenceId);
   team.rank = competitorDict.curatedRank.current;
   team.records = {};
-  team.records.overall = competitorDict.records[0].summary;
-  team.records.conference = competitorDict.records[1].summary;
-  team.records.home = competitorDict.records[2].summary;
-  team.records.away = competitorDict.records[3].summary;
+  if (competitorDict.records && competitorDict.records.length > 0) {
+    team.records.overall = competitorDict.records[0].summary;
+    team.records.conference = competitorDict.records[1].summary;
+    team.records.home = competitorDict.records[2].summary;
+    team.records.away = competitorDict.records[3].summary;
+  }
   return team;
 }
 
-//Main scoreboard API call
+function validateDate(date)
+{
+  re = /^\d{4}\d{2}\d{2}$/;
+
+  if(date != '' && !date.match(re)) {
+    console.log("Invalid date format: " + date);
+    return false;
+  }
+
+  return true;
+}
+
+function validateWeek(week)
+{
+  re = /^\d{1,2}$/;
+
+  if(week != '' && !week.match(re)) {
+    console.log("Invalid week format: " + week);
+    return false;
+  }
+
+  return true;
+}
+
+//Main scoreboard functions
 app.get('/scoreboard', function(request, response) {
 
   Date.prototype.yyyymmdd = function() {
@@ -232,15 +258,17 @@ app.get('/scoreboard', function(request, response) {
     return yyyy + (mm[1] ? mm: '0' + mm[0]) + (dd[1] ? dd: '0' + dd[0]);
   };
 
-  var dateString;
-  if (request.query.date) {
-    dateString = request.query.date;
+  var queryString;
+  var curDate = new Date();
+  if (request.query.date && validateDate(request.query.date)) {
+    queryString = '?calendartype=blacklist&dates=' + request.query.date;
+  } else if (request.query.week && validateWeek(request.query.week)) {
+    queryString = '?week=' + request.query.week;
   } else {
-    var curDate = new Date();
-    dateString = curDate.yyyymmdd();
+    queryString = '?calendartype=blacklist&dates=' + curDate.yyyymmdd();
   }
 
-  var url = 'http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?calendartype=blacklist&dates=' + dateString;
+  var url = 'http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard' + queryString;
 
   http.get(url, function(res) {
     var body = '';
@@ -253,8 +281,16 @@ app.get('/scoreboard', function(request, response) {
       if (cfbResponse.events) {
         var apiResponse = {};
         apiResponse.retrievedAt = new Date();
-        apiResponse.queriedDate = request.query.date;
-        apiResponse.queriedUrl = url;
+        if (request.query.date) {
+          apiResponse.queriedDate = request.query.date;
+        } else if (request.query.week) {
+          apiResponse.week = request.query.week;
+          apiResponse.season = cfbResponse.events[0].season.year.toString();
+          //apiResponse.season = request.query.season; //soon^tm
+        } else {
+          apiResponse.season = cfbResponse.events[0].season.year.toString();
+        }
+        apiResponse.espnUrl = url;
         var games = [];
         for (var i = 0; i < cfbResponse.events.length; i++) {
           var gameEvent = cfbResponse.events[i];
@@ -269,7 +305,11 @@ app.get('/scoreboard', function(request, response) {
           game.venue.name = gameEvent.competitions[0].venue.fullName;
           game.venue.city = gameEvent.competitions[0].venue.address.city;
           game.venue.state = gameEvent.competitions[0].venue.address.state;
-          game.headline = gameEvent.competitions[0].notes[0].headline;
+          if (gameEvent.competitions[0].notes && gameEvent.competitions[0].notes.length > 0) {
+            game.headline = gameEvent.competitions[0].notes[0].headline;
+          } else {
+            game.headline = '';
+          }
           game.scores = {};
           game.scores.home = gameEvent.competitions[0].competitors[0].score;
           game.scores.away = gameEvent.competitions[0].competitors[1].score;
