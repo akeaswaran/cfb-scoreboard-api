@@ -297,3 +297,15 @@ describe('formTeamHistoryUrl(value)', function() {
       assert.equal(main.formTeamHistoryUrl(teamAbbrev), 'https://collegefootballapi.com/api/1.0/teams/georgia_tech');
     });
 });
+
+describe('createESPNGame(value)', function() {
+    it('createCFBGame should return a correctly formatted dictionary from a given JSON input from ESPN', function () {
+
+    });
+});
+
+describe('createCFBGame(value)', function() {
+    it('createCFBGame should return a correctly formatted dictionary from a given JSON input from CFBAPI', function () {
+
+    });
+});
