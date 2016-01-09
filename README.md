@@ -1,4 +1,4 @@
-# CFB Scoreboard API
+# CFB Scoreboard API [![Build Status](https://travis-ci.org/akeaswaran/cfb-scoreboard-api.svg?branch=master)](https://travis-ci.org/akeaswaran/cfb-scoreboard-api)
 
 A simple college football JSON API that re-parses ESPN's internal college football API to strip unnecessary data and make it more useable (and useful!).
 
