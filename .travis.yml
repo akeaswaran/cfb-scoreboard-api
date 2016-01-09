@@ -9,3 +9,9 @@ deploy:
   app: cfb-scoreboard-api
   on:
     repo: akeaswaran/cfb-scoreboard-api
+notifications:
+  email:
+    recipients:
+      - akeaswaran@me.com
+    on_success: never
+    on_failure: always
