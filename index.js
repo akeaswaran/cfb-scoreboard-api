@@ -1,21 +1,8 @@
+//Static variables
 var express = require('express');
 var http = require('http');
 var https = require('https');
 var app = express();
-
-app.set('port', (process.env.PORT || 5000));
-
-app.use(express.static(__dirname + '/public'));
-
-// views is directory for all template files
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-
-app.get('/', function(request, response) {
-  response.render('pages/index');
-});
-
-//Static variables
 var teamNames = {
   "air_force": "AFA",
   "akron": "AKR",
@@ -147,6 +134,20 @@ var teamNames = {
   "w_michigan": "WMU"
 };
 
+//App setup
+app.set('port', (process.env.PORT || 5000));
+
+app.use(express.static(__dirname + '/public'));
+
+// views is directory for all template files
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+
+app.get('/', function(request, response) {
+  response.render('pages/index');
+});
+
+
 //Utility Functions
 function getConferenceId(conferenceAbbr) {
     if (conferenceAbbr === 'acc') {
@@ -170,7 +171,7 @@ function getConferenceId(conferenceAbbr) {
     } else if (conferenceAbbr === 'aac') {
       return '151';
     } else {
-      return '200';
+      return '369';
     }
 }
 
@@ -263,12 +264,12 @@ function validateDate(date)
 {
   re = /^\d{4}\d{2}\d{2}$/;
 
-  if(date !== '' && !date.match(re)) {
-    console.log("Invalid date: " + date);
-    return false;
+  if(date !== '' && date.match(re)) {
+    return true;
   }
 
-  return true;
+  console.log("Invalid date: " + date);
+  return false;
 }
 
 function validateWeek(week)
@@ -278,6 +279,7 @@ function validateWeek(week)
   if(week !== '' && week.match(re) && week < 16) {
     return true;
   }
+
   console.log("Invalid week: " + week);
   return false;
 }
@@ -293,16 +295,15 @@ function validateSeason(season)
   return false;
 }
 
+Date.prototype.yyyymmdd = function() {
+  var yyyy = this.getFullYear().toString();
+  var mm = (this.getMonth() + 1).toString();
+  var dd  = this.getDate().toString();
+  return yyyy + (mm[1] ? mm: '0' + mm[0]) + (dd[1] ? dd: '0' + dd[0]);
+};
+
 //Main scoreboard functions
 app.get('/scoreboard', function(request, response) {
-
-  Date.prototype.yyyymmdd = function() {
-    var yyyy = this.getFullYear().toString();
-    var mm = (this.getMonth() + 1).toString();
-    var dd  = this.getDate().toString();
-    return yyyy + (mm[1] ? mm: '0' + mm[0]) + (dd[1] ? dd: '0' + dd[0]);
-  };
-
   var queryString;
   var curDate = new Date();
   if (!request.query.season) { // current data
@@ -417,23 +418,23 @@ app.get('/scoreboard', function(request, response) {
           }
           response.write(JSON.stringify(apiResponse));
         } else {
-          console.log('ERROR: no data');
-          response.write(JSON.stringify(cfbResponse.events));
+          response.write('{"code":404,"detail": "error: data not found"}');
         }
 
         response.end();
       });
     }).on('error', function(e) {
       console.log('Got an error: ', e);
-      response.render('pages/index');
+      response.write('{"code":404,"detail":' + e + '}');
     });
   } else { //historical data
 
       if (validateSeason(request.query.season)) {
         var url = 'https://collegefootballapi.com/api/1.0/season/' + request.query.season + '/';
         if (request.query.week) {
+          console.log('WEEK:' + request.query.week);
           if (validateWeek(request.query.week)) {
-              url = 'https://collegefootballapi.com/api/1.0/season/' + request.query.season + '/week/' + request.query.week + '/';
+              url = 'https://collegefootballapi.com/api/1.0/season/' + request.query.season + '/week/' + request.query.week;
           }
         }
 
@@ -494,13 +495,13 @@ app.get('/scoreboard', function(request, response) {
               response.write(JSON.stringify(apiResponse));
             } else {
               console.log('ERROR: no data');
-              response.write(JSON.stringify(cfbResponse.games));
+              response.write('{"code":404,"detail": "error: data not found"}');
             }
             response.end();
           });
         }).on('error', function(e) {
           console.log('Got an error: ', e);
-          response.render('pages/index');
+          response.write('{"code":404,"detail":' + e + '}');
         });
       }
     }
@@ -516,5 +517,10 @@ module.exports = {
   validateWeek: validateWeek,
   validateSeason: validateSeason,
   getConference: getConference,
-  getConferenceId: getConferenceId
+  getConferenceId: getConferenceId,
+  getTeamId: getTeamId,
+  getTeamAbbreviation: getTeamAbbreviation,
+  createESPNTeam: createESPNTeam,
+  yyyymmdd: Date.prototype.yyyymmdd,
+  formTeamHistoryUrl: formTeamHistoryUrl
 };
