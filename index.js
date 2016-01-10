@@ -4,135 +4,136 @@ var http = require('http');
 var request = require('request');
 var Q = require('q');
 var app = express();
+var version = '1';
 var teamNames = {
-  "air_force": "AFA",
-  "akron": "AKR",
-  "alabama": "ALA",
-  "appalachian_st": "APP",
-  "arizona": "ARIZ",
-  "arizona_st": "ASU",
-  "arkansas": "ARK",
-  "arkansas_st": "ARST",
-  "army": "ARMY",
-  "auburn": "AUB",
-  "ball_st": "BALL",
-  "baylor": "BAY",
-  "boise_st": "BSU",
-  "boston_college": "BC",
-  "bowling_green": "BGSU",
-  "buffalo": "BUFF",
-  "byu": "BYU",
-  "california": "CAL",
-  "cincinnati": "CIN",
-  "clemson": "CLEM",
-  "colorado": "COLO",
-  "colorado_st": "CSU",
-  "connecticut": "CONN",
-  "c_michigan": "CMU",
-  "duke": "DUKE",
-  "east_carolina": "ECU",
-  "e_michigan": "EMU",
-  "florida": "FLA",
-  "florida_intl": "FIU",
-  "florida_st": "FSU",
-  "fl_atlantic": "FAU",
-  "fresno_st": "FRES",
-  "ga_southern": "GASO",
-  "georgia": "UGA",
-  "georgia_st": "GAST",
-  "georgia_tech": "GT",
-  "hawaii": "HAW",
-  "houston": "HOU",
-  "idaho": "IDHO",
-  "illinois": "ILL",
-  "indiana": "IND",
-  "iowa": "IOWA",
-  "iowa_st": "ISU",
-  "kansas": "KU",
-  "kansas_st": "KSU",
-  "kent": "KENT",
-  "kentucky": "UK",
-  "louisiana_tech": "LT",
-  "louisville": "LOU",
-  "lsu": "LSU",
-  "marshall": "MRSH",
-  "maryland": "UMD",
-  "massachusetts": "UMASS",
-  "memphis": "MEM",
-  "miami_fl": "MIA",
-  "miami_oh": "M-(OH)",
-  "michigan": "MICH",
-  "michigan_st": "MSU",
-  "minnesota": "MINN",
-  "mississippi": "MISS",
-  "mississippi_st": "MSST",
-  "missouri": "MIZZ",
-  "mtsu": "MTSU",
-  "navy": "NAVY",
-  "nc_state": "NCST",
-  "nebraska": "NEB",
-  "nevada": "NEV",
-  "new_mexico": "UNM",
-  "new_mexico_st": "NMSU",
-  "northwestern": "NW",
-  "north_carolina": "UNC",
-  "north_texas": "UNT",
-  "notre_dame": "ND",
-  "n_illinois": "NIU",
-  "ohio": "OHIO",
-  "ohio_st": "OSU",
-  "oklahoma": "OU",
-  "oklahoma_st": "OKST",
-  "old_dominion": "ODU",
-  "oregon": "ORE",
-  "oregon_st": "ORST",
-  "penn_st": "PSU",
-  "pittsburgh": "PITT",
-  "purdue": "PUR",
-  "rice": "RICE",
-  "rutgers": "RUTG",
-  "san_diego_st": "SDSU",
-  "san_jose_st": "SJSU",
-  "smu": "SMU",
-  "southern_miss": "USM",
-  "south_alabama": "USA",
-  "south_carolina": "SCAR",
-  "south_florida": "USF",
-  "stanford": "STAN",
-  "syracuse": "SYR",
-  "tcu": "TCU",
-  "temple": "TEM",
-  "tennessee": "TENN",
-  "texas": "TEX",
-  "texas_am": "TAMU",
-  "texas_st": "TXST",
-  "texas_tech": "TTU",
-  "toledo": "TOL",
-  "troy": "TROY",
-  "tulane": "TULN",
-  "tulsa": "TLSA",
-  "uab": "UAB",
-  "ucf": "UCF",
-  "ucla": "UCLA",
-  "ull": "ULL",
-  "ulm": "ULM",
-  "unlv": "UNLV",
-  "usc": "USC",
-  "utah": "UTAH",
-  "utah_st": "USU",
-  "utep": "UTEP",
-  "ut_san_antonio": "UTSA",
-  "vanderbilt": "VAN",
-  "virginia": "UVA",
-  "virginia_tech": "VT",
-  "wake_forest": "WAKE",
-  "washington": "UW",
-  "washington_st": "WSU",
-  "west_virginia": "WVU",
-  "wisconsin": "WIS",
-  "wyoming": "WYO",
-  "w_kentucky": "WKU",
-  "w_michigan": "WMU"
+  'air_force': 'AFA',
+  'akron': 'AKR',
+  'alabama': 'ALA',
+  'appalachian_st': 'APP',
+  'arizona': 'ARIZ',
+  'arizona_st': 'ASU',
+  'arkansas': 'ARK',
+  'arkansas_st': 'ARST',
+  'army': 'ARMY',
+  'auburn': 'AUB',
+  'ball_st': 'BALL',
+  'baylor': 'BAY',
+  'boise_st': 'BSU',
+  'boston_college': 'BC',
+  'bowling_green': 'BGSU',
+  'buffalo': 'BUFF',
+  'byu': 'BYU',
+  'california': 'CAL',
+  'cincinnati': 'CIN',
+  'clemson': 'CLEM',
+  'colorado': 'COLO',
+  'colorado_st': 'CSU',
+  'connecticut': 'CONN',
+  'c_michigan': 'CMU',
+  'duke': 'DUKE',
+  'east_carolina': 'ECU',
+  'e_michigan': 'EMU',
+  'florida': 'FLA',
+  'florida_intl': 'FIU',
+  'florida_st': 'FSU',
+  'fl_atlantic': 'FAU',
+  'fresno_st': 'FRES',
+  'ga_southern': 'GASO',
+  'georgia': 'UGA',
+  'georgia_st': 'GAST',
+  'georgia_tech': 'GT',
+  'hawaii': 'HAW',
+  'houston': 'HOU',
+  'idaho': 'IDHO',
+  'illinois': 'ILL',
+  'indiana': 'IND',
+  'iowa': 'IOWA',
+  'iowa_st': 'ISU',
+  'kansas': 'KU',
+  'kansas_st': 'KSU',
+  'kent': 'KENT',
+  'kentucky': 'UK',
+  'louisiana_tech': 'LT',
+  'louisville': 'LOU',
+  'lsu': 'LSU',
+  'marshall': 'MRSH',
+  'maryland': 'UMD',
+  'massachusetts': 'UMASS',
+  'memphis': 'MEM',
+  'miami_fl': 'MIA',
+  'miami_oh': 'M-(OH)',
+  'michigan': 'MICH',
+  'michigan_st': 'MSU',
+  'minnesota': 'MINN',
+  'mississippi': 'MISS',
+  'mississippi_st': 'MSST',
+  'missouri': 'MIZZ',
+  'mtsu': 'MTSU',
+  'navy': 'NAVY',
+  'nc_state': 'NCST',
+  'nebraska': 'NEB',
+  'nevada': 'NEV',
+  'new_mexico': 'UNM',
+  'new_mexico_st': 'NMSU',
+  'northwestern': 'NW',
+  'north_carolina': 'UNC',
+  'north_texas': 'UNT',
+  'notre_dame': 'ND',
+  'n_illinois': 'NIU',
+  'ohio': 'OHIO',
+  'ohio_st': 'OSU',
+  'oklahoma': 'OU',
+  'oklahoma_st': 'OKST',
+  'old_dominion': 'ODU',
+  'oregon': 'ORE',
+  'oregon_st': 'ORST',
+  'penn_st': 'PSU',
+  'pittsburgh': 'PITT',
+  'purdue': 'PUR',
+  'rice': 'RICE',
+  'rutgers': 'RUTG',
+  'san_diego_st': 'SDSU',
+  'san_jose_st': 'SJSU',
+  'smu': 'SMU',
+  'southern_miss': 'USM',
+  'south_alabama': 'USA',
+  'south_carolina': 'SCAR',
+  'south_florida': 'USF',
+  'stanford': 'STAN',
+  'syracuse': 'SYR',
+  'tcu': 'TCU',
+  'temple': 'TEM',
+  'tennessee': 'TENN',
+  'texas': 'TEX',
+  'texas_am': 'TAMU',
+  'texas_st': 'TXST',
+  'texas_tech': 'TTU',
+  'toledo': 'TOL',
+  'troy': 'TROY',
+  'tulane': 'TULN',
+  'tulsa': 'TLSA',
+  'uab': 'UAB',
+  'ucf': 'UCF',
+  'ucla': 'UCLA',
+  'ull': 'ULL',
+  'ulm': 'ULM',
+  'unlv': 'UNLV',
+  'usc': 'USC',
+  'utah': 'UTAH',
+  'utah_st': 'USU',
+  'utep': 'UTEP',
+  'ut_san_antonio': 'UTSA',
+  'vanderbilt': 'VAN',
+  'virginia': 'UVA',
+  'virginia_tech': 'VT',
+  'wake_forest': 'WAKE',
+  'washington': 'UW',
+  'washington_st': 'WSU',
+  'west_virginia': 'WVU',
+  'wisconsin': 'WIS',
+  'wyoming': 'WYO',
+  'w_kentucky': 'WKU',
+  'w_michigan': 'WMU'
 };
 
 //App setup
@@ -143,11 +144,6 @@ app.use(express.static(__dirname + '/public'));
 // views is directory for all template files
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
-
-app.get('/', function(request, response) {
-  response.render('pages/index');
-});
-
 
 //Utility Functions
 function getConferenceId(conferenceAbbr) {
@@ -362,7 +358,7 @@ function createCFBGame(apiGame) {
   createdGame.awayTeam = {'abbreviation' : getTeamAbbreviation(awayId), 'links' : {'details':'https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=' + awayId}};
   createdGame.homeTeam = {'abbreviation' : getTeamAbbreviation(homeId), 'links' : {'details':'https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=' + homeId}};
   createdGame.links = {};
-  createdGame.links.details = 'https://cfb-scoreboard-api.herokuapp.com/scoreboard?game=' + createdGame.id + '/';
+  createdGame.links.details = 'https://cfb-scoreboard-api.herokuapp.com/v' + version + '/game/' + createdGame.id + '/';
   createdGame.matchupUrl = 'https://collegefootballapi.com/api/1.0/matchup/' + homeId + '/' + awayId;
   return createdGame;
 }
@@ -452,7 +448,7 @@ function validateDate(date)
     return true;
   }
 
-  console.log("Invalid date: " + date);
+  console.log('ERROR: Invalid date: ' + date);
   return false;
 }
 
@@ -464,7 +460,7 @@ function validateWeek(week)
     return true;
   }
 
-  console.log("Invalid week: " + week);
+  console.log('ERROR: Invalid week: ' + week);
   return false;
 }
 
@@ -475,7 +471,7 @@ function validateSeason(season)
   if (season && season !== '' && season.match(re) && season < 2015 && season > 1984) {
     return true;
   }
-  console.log("Invalid season: " + season);
+  console.log('ERROR: Invalid season: ' + season);
   return false;
 }
 
@@ -485,77 +481,6 @@ Date.prototype.yyyymmdd = function() {
   var dd  = this.getDate().toString();
   return yyyy + (mm[1] ? mm: '0' + mm[0]) + (dd[1] ? dd: '0' + dd[0]);
 };
-
-//Main functions
-app.get('/scoreboard', function(request, response) {
-  var queryString;
-  var curDate = new Date();
-  if (!request.query.season && !request.query.game) { // current data
-    if (request.query.date && validateDate(request.query.date)) {
-      queryString = '?calendartype=blacklist&dates=' + request.query.date;
-    } else if (request.query.week && validateWeek(request.query.week)) {
-      queryString = '?week=' + request.query.week;
-    } else {
-      queryString = '?calendartype=blacklist&dates=' + curDate.yyyymmdd();
-    }
-    var url = 'http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard' + queryString;
-
-    http.get(url, function(res) {
-      var body = '';
-      res.on('data', function(chunk) {
-        body += chunk;
-      });
-
-      res.on('end', function() {
-        var cfbResponse = JSON.parse(body);
-        if (cfbResponse.events) {
-          var apiResponse = {};
-          apiResponse.retrievedAt = new Date();
-          apiResponse.url = url;
-          apiResponse.service = 'espn';
-          var games = [];
-          for (var i = 0; i < cfbResponse.events.length; i++) {
-            var gameEvent = cfbResponse.events[i];
-            var game = createESPNGame(gameEvent);
-            games.push(game);
-          }
-
-          apiResponse.games = games;
-          if (games.length > 0) {
-            if (request.query.date) {
-              apiResponse.date = request.query.date;
-            } else if (request.query.week) {
-              apiResponse.week = request.query.week;
-              apiResponse.season = games[0].season.toString();
-            } else {
-              apiResponse.season = games[0].season.toString();
-            }
-          }
-          response.write(JSON.stringify(apiResponse, null, 2));
-          response.end();
-        } else {
-          response.write('{"code":404,"detail": "error: data not found"}');
-          response.end();
-        }
-      });
-    }).on('error', function(e) {
-      console.log('Got an error: ', e);
-      response.write('{"code":404,"detail":' + e + '}');
-      response.end();
-    });
-  } else if (request.query.season) { //historical data
-      if (validateSeason(request.query.season) && validateWeek(request.query.week)) {
-        fetchCFBHistory(request.query.season, request.query.week, response);
-      } else if (validateSeason(request.query.season) && !validateWeek(request.query.week)) {
-        fetchCFBHistory(request.query.season, null, response);
-      } else {
-        response.write('{"code":404,"detail": "error: data not found"}');
-        response.end();
-      }
-  } else { //detailed game data
-    fetchCFBGameHistory(request.query.game, response);
-  }
-});
 
 function fetchCFBHistory(season, week, orgResponse) {
   var url = 'https://collegefootballapi.com/api/1.0/season/' + season + '/';
@@ -572,6 +497,7 @@ function fetchCFBHistory(season, week, orgResponse) {
       apiResponse.season = season;
       apiResponse.url = url;
       apiResponse.service = 'cfb';
+      apiResponse.apiVersion = version + '.0';
       if (week) {
         apiResponse.week = week;
       }
@@ -585,14 +511,14 @@ function fetchCFBHistory(season, week, orgResponse) {
         apiResponse.games = createdGames;
       } else {
         console.log('ERROR: no data');
-        apiResponse = {"code":404,"detail": "error: data not found"};
+        apiResponse = {'code': 404,'error': 'data not found'};
       }
 
       orgResponse.write(JSON.stringify(apiResponse, null, 2));
       orgResponse.end();
     } else {
       console.log('ERROR: ' + error);
-      orgResponse.write(JSON.stringify({"code":error.code,'detail': 'error: ' + error}));
+      orgResponse.write(JSON.stringify({'code': error.code,'error': error}));
       orgResponse.end();
     }
   });
@@ -608,21 +534,185 @@ function fetchCFBGameHistory(gameId, orgResponse) {
       apiResponse.retrievedAt = new Date();
       apiResponse.url = url;
       apiResponse.service = 'cfb';
+      apiResponse.apiVersion = version + '.0';
       if (cfbResponse) {
         Q.fcall(parseCFBJSON, apiResponse, cfbResponse, orgResponse);
       } else {
         console.log('ERROR: no data');
-        apiResponse = {"code":404,"detail": "error: data not found"};
-        orgReponse(JSON.stringify(apiResponse, null, 2));
+        apiResponse = {'code':404,'error': 'data not found'};
+        orgReponse.write(JSON.stringify(apiResponse, null, 2));
         orgReponse.end();
       }
     } else {
       console.log('ERROR: ' + error);
-      orgResponse.write(JSON.stringify({"code":error.code,'detail': 'error: ' + error}));
+      orgResponse.write(JSON.stringify({'code':error.code,'error': error}));
       orgResponse.end();
     }
   });
 }
+
+//Main functions
+app.get('/', function(request, response) {
+  response.render('pages/index');
+});
+
+app.get('/v' + version, function(request, response) {
+  console.log('ERROR: no params');
+  apiResponse = {'code':404,'error': 'Invalid request, no parameters provided'};
+  response.write(JSON.stringify(apiResponse, null, 2));
+  response.end();
+});
+
+app.get('/v' + version + '/today', function(request, response) {
+  var curDate = new Date();
+  var url = 'http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?calendartype=blacklist&dates=' + curDate.yyyymmdd();
+
+  http.get(url, function(res) {
+    var body = '';
+    res.on('data', function(chunk) {
+      body += chunk;
+    });
+
+    res.on('end', function() {
+      var cfbResponse = JSON.parse(body);
+      if (cfbResponse.events) {
+        var apiResponse = {};
+        apiResponse.retrievedAt = new Date();
+        apiResponse.url = url;
+        apiResponse.service = 'espn';
+        apiResponse.apiVersion = version + '.0';
+        var games = [];
+        for (var i = 0; i < cfbResponse.events.length; i++) {
+          var gameEvent = cfbResponse.events[i];
+          var game = createESPNGame(gameEvent);
+          games.push(game);
+        }
+
+        apiResponse.games = games;
+        response.write(JSON.stringify(apiResponse, null, 2));
+        response.end();
+      } else {
+        var errorResponse = {'code':404,'error': 'data not found'};
+        response.write(JSON.stringify(errorResponse, null, 2));
+        response.end();
+      }
+    });
+  }).on('error', function(error) {
+    console.log('Got an error: ', error);
+    var apiResponse = {'code': error.code, 'error': error};
+    response.end();
+  });
+});
+
+app.get('/v' + version + '/date/', function(request, response) {
+  var apiResponse = {'code':400,'error': 'Invalid request, must provide date to query'};
+  response.write(JSON.stringify(apiResponse, null, 2));
+  response.end();
+});
+
+app.get('/v' + version + '/date/:date', function(request, response) {
+  var queryString;
+  if (request.params.date && validateDate(request.params.date)) {
+    queryString = '?calendartype=blacklist&dates=' + request.params.date;
+
+    var url = 'http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard' + queryString;
+
+    http.get(url, function(res) {
+      var body = '';
+      res.on('data', function(chunk) {
+        body += chunk;
+      });
+
+      res.on('end', function() {
+        var cfbResponse = JSON.parse(body);
+        if (cfbResponse.events) {
+          var apiResponse = {};
+          apiResponse.retrievedAt = new Date();
+          apiResponse.url = url;
+          apiResponse.service = 'espn';
+          apiResponse.apiVersion = version + '.0';
+          var games = [];
+          for (var i = 0; i < cfbResponse.events.length; i++) {
+            var gameEvent = cfbResponse.events[i];
+            var game = createESPNGame(gameEvent);
+            games.push(game);
+          }
+
+          apiResponse.games = games;
+          apiResponse.date = request.params.date;
+          response.write(JSON.stringify(apiResponse, null, 2));
+          response.end();
+        } else {
+          var errorResponse = {'code':404,'error': 'data not found'};
+          response.write(JSON.stringify(errorResponse, null, 2));
+          response.end();
+        }
+      });
+    }).on('error', function(error) {
+      console.log('Got an error: ', error);
+      var apiResponse = {'code': error.code, 'error': error};
+      response.end();
+    });
+  } else {
+    var errorResponse = {'code':404,'error': 'data not found'};
+    response.write(JSON.stringify(errorResponse, null, 2));
+    response.end();
+  }
+});
+
+app.get('/v' + version + '/week/', function(request, response) {
+  var apiResponse = {'code':404,'error': 'Endpoint not found'};
+  response.write(JSON.stringify(apiResponse, null, 2));
+  response.end();
+});
+
+app.get('/v' + version + '/week/:week', function(request, response) {
+  var apiResponse = {'code':404,'error': 'Endpoint not found'};
+  response.write(JSON.stringify(apiResponse, null, 2));
+  response.end();
+});
+
+app.get('/v' + version + '/season/', function(request, response) {
+  var apiResponse = {'code':400,'error': 'Invalid request, must provide season to query'};
+  response.write(JSON.stringify(apiResponse, null, 2));
+  response.end();
+});
+
+app.get('/v' + version + '/season/:season', function(request, response) {
+  if (validateSeason(request.params.season)) {
+    fetchCFBHistory(request.params.season, null, response);
+  } else {
+    var apiResponse = {'code':404,'error': 'data not found'};
+    response.write(JSON.stringify(apiResponse, null, 2));
+    response.end();
+  }
+});
+
+app.get('/v' + version + '/season/:season/week/', function(request, response) {
+  var apiResponse = {'code':400,'error': 'Invalid request, must provide week to query'};
+  response.write(JSON.stringify(apiResponse, null, 2));
+  response.end();
+});
+
+app.get('/v' + version + '/season/:season/week/:week', function(request, response) {
+  if (validateSeason(request.params.season) && validateWeek(request.params.week)) {
+    fetchCFBHistory(request.params.season, request.params.week, response);
+  } else {
+    var apiResponse = {'code':404,'error': 'data not found'};
+    response.write(JSON.stringify(apiResponse, null, 2));
+    response.end();
+  }
+});
+
+app.get('/v' + version + '/game/', function(request, response) {
+  var apiResponse = {'code':400,'error': 'Invalid request, must provide game to query'};
+  response.write(JSON.stringify(apiResponse, null, 2));
+  response.end();
+});
+
+app.get('/v' + version + '/game/:game', function(request, response) {
+  fetchCFBGameHistory(request.params.game, response);
+});
 
 //post listening
 app.listen(app.get('port'), function() {
@@ -640,7 +730,6 @@ module.exports = {
   createESPNTeam: createESPNTeam,
   yyyymmdd: Date.prototype.yyyymmdd,
   formTeamHistoryUrl: formTeamHistoryUrl,
-  createESPNGame: createESPNGame,
   createCFBGame: createCFBGame,
   createCFBTeam: createCFBTeam
 };

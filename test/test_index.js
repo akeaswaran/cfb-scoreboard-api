@@ -298,13 +298,6 @@ describe('formTeamHistoryUrl(value)', function() {
     });
 });
 
-/* this test is long and I am too lazy to write it. Please write this test for me and submit a pull request. :)
-describe('createESPNGame(value)', function() {
-    it('createCFBGame should return a correctly formatted dictionary from a given JSON input from ESPN', function () {
-
-    });
-});*/
-
 describe('createCFBGame(value)', function() {
     it('createCFBGame should return a correctly formatted dictionary from a given JSON input from CFBAPI', function () {
       var apiGame = {};
@@ -336,7 +329,7 @@ describe('createCFBGame(value)', function() {
       var createdGame = main.createCFBGame(apiGame);
       assert.deepEqual(createdGame.homeTeam, {'abbreviation' : 'ARIZ', 'links' : {'details':'https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=arizona'}});
       assert.deepEqual(createdGame.awayTeam, {'abbreviation' : 'UCLA', 'links' : {'details':'https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=ucla'}});
-      assert.deepEqual(createdGame.links.details, 'https://cfb-scoreboard-api.herokuapp.com/scoreboard?game=116158/');
+      assert.deepEqual(createdGame.links.details, 'https://cfb-scoreboard-api.herokuapp.com/v1/game/116158/');
       assert.deepEqual(createdGame.matchupUrl, 'https://collegefootballapi.com/api/1.0/matchup/arizona/ucla');
       assert.deepEqual(createdGame.winner, 'away');
       assert.deepEqual(createdGame.scores.away, 56);
