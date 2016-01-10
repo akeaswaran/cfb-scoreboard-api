@@ -2,6 +2,7 @@
 var express = require('express');
 var http = require('http');
 var request = require('request');
+var Q = require('q');
 var app = express();
 var teamNames = {
   "air_force": "AFA",
@@ -83,14 +84,14 @@ var teamNames = {
   "oklahoma": "OU",
   "oklahoma_st": "OKST",
   "old_dominion": "ODU",
-  "oregon": "Oregon",
-  "oregon_st": "Oregon State",
-  "penn_st": "Penn State",
-  "pittsburgh": "Pittsburgh",
-  "purdue": "Purdue",
-  "rice": "Rice",
-  "rutgers": "Rutgers",
-  "san_diego_st": "ORE",
+  "oregon": "ORE",
+  "oregon_st": "ORST",
+  "penn_st": "PSU",
+  "pittsburgh": "PITT",
+  "purdue": "PUR",
+  "rice": "RICE",
+  "rutgers": "RUTG",
+  "san_diego_st": "SDSU",
   "san_jose_st": "SJSU",
   "smu": "SMU",
   "southern_miss": "USM",
@@ -339,7 +340,6 @@ function createCFBGame(apiGame) {
   createdGame.id = apiGame.id;
   createdGame.season = apiGame.season.season;
   createdGame.date = (new Date(apiGame.date.year, (apiGame.date.month - 1), apiGame.date.day, 0, 0, 0, 0)).toISOString();
-
   createdGame.scores = {};
   createdGame.scores.home = apiGame.results.home_score;
   createdGame.scores.away = apiGame.results.away_score;
@@ -361,9 +361,87 @@ function createCFBGame(apiGame) {
 
   createdGame.awayTeam = {'abbreviation' : getTeamAbbreviation(awayId), 'links' : {'details':'https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=' + awayId}};
   createdGame.homeTeam = {'abbreviation' : getTeamAbbreviation(homeId), 'links' : {'details':'https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=' + homeId}};
-
+  createdGame.links = {};
+  createdGame.links.details = 'https://cfb-scoreboard-api.herokuapp.com/scoreboard?game=' + createdGame.id + '/';
   createdGame.matchupUrl = 'https://collegefootballapi.com/api/1.0/matchup/' + homeId + '/' + awayId;
   return createdGame;
+}
+
+function getCFBTeamData(url, callback) {
+  //console.log('TALKING TO URL: ' + url);
+  request(url, function(error, response, body) {
+    if (!error) {
+      //console.log('PARSING BODY: ' + body);
+      callback(JSON.parse(body));
+    } else {
+      //console.log('ERROR: ' + error);
+      callback({'code' : 404, 'error' : error});
+    }
+  });
+}
+
+function createCFBTeam(teamJSON, callback) {
+  var teamData = teamJSON[0];
+  var team = {
+    id: teamData.id,
+    location: teamData.location,
+    name: teamData.mascot,
+    displayName: teamData.common_name + ' ' + teamData.mascot,
+    abbreviation: teamData.abbreviation,
+    //logoUrl: teamData.logo_Url, //not supported yet
+    links: {
+      details: formTeamHistoryUrl(teamData.abbreviation),
+      history: 'https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=' + getTeamId(teamData.abbreviation)
+    },
+    conference: getConference(getConferenceId(teamData.conference[0].identifier))
+  };
+  callback(team);
+}
+
+function assignHomeTeam(createdGame, homeTeam) {
+  //console.log('\n\nHOME TEAM CONSTRUCTION\n\n' + homeTeam + '\n\n');
+  createdGame.homeTeam = homeTeam;
+}
+
+function createHomeTeam(createdGame, homeTeamData) {
+  return Q.fcall(createCFBTeam, homeTeamData, function(homeTeam) {
+    Q.fcall(assignHomeTeam, createdGame, homeTeam);
+  });
+}
+
+function assignAwayTeam(createdGame, awayTeam) {
+  //console.log('\n\nAWAY TEAM CONSTRUCTION\n\n' + awayTeam + '\n\n');
+  createdGame.awayTeam = awayTeam;
+}
+
+function createAwayTeam(createdGame, awayTeamData) {
+  return Q.fcall(createCFBTeam, awayTeamData, function(awayTeam) {
+    Q.fcall(assignAwayTeam, createdGame, awayTeam);
+  });
+}
+
+function finishParsing(createdGame, apiResponse, orgResponse) {
+  //console.log('\n\nPUSHING TO JSON:\n\n' + JSON.stringify(createdGame, null, 2) + '\n\n');
+  apiResponse.game = createdGame;
+  orgResponse.write(JSON.stringify(apiResponse, null, 2));
+  orgResponse.end();
+}
+
+function parseCFBJSON(apiResponse, cfbResponse, orgResponse) {
+  var apiGame = cfbResponse;
+  createdGame = createCFBGame(apiGame);
+  //console.log('\n\nBEFORE ANY CONSTRUCTION:\n\n' + JSON.stringify(createdGame, null, 2) + '\n\n');
+  Q.fcall(getCFBTeamData, createdGame.homeTeam.links.details, function(homeTeamData) {
+    //console.log('\n\nBEFORE HOME TEAM CONSTRUCTION:\n\n' + JSON.stringify(createdGame, null, 2) + '\n\n');
+    Q.fcall(createHomeTeam, createdGame, homeTeamData).then(function() {
+      Q.fcall(getCFBTeamData, createdGame.awayTeam.links.details, function(awayTeamData) {
+        //console.log('\n\nBEFORE AWAY TEAM CONSTRUCTION:\n\n' + JSON.stringify(createdGame, null, 2) + '\n\n');
+        Q.fcall(createAwayTeam, createdGame, awayTeamData).then(function() {
+          Q.fcall(finishParsing, createdGame, apiResponse, orgResponse).done();
+        }).done();
+      });
+    });
+  });
 }
 
 function validateDate(date)
@@ -408,11 +486,11 @@ Date.prototype.yyyymmdd = function() {
   return yyyy + (mm[1] ? mm: '0' + mm[0]) + (dd[1] ? dd: '0' + dd[0]);
 };
 
-//Main scoreboard functions
+//Main functions
 app.get('/scoreboard', function(request, response) {
   var queryString;
   var curDate = new Date();
-  if (!request.query.season) { // current data
+  if (!request.query.season && !request.query.game) { // current data
     if (request.query.date && validateDate(request.query.date)) {
       queryString = '?calendartype=blacklist&dates=' + request.query.date;
     } else if (request.query.week && validateWeek(request.query.week)) {
@@ -433,7 +511,8 @@ app.get('/scoreboard', function(request, response) {
         if (cfbResponse.events) {
           var apiResponse = {};
           apiResponse.retrievedAt = new Date();
-          apiResponse.espnUrl = url;
+          apiResponse.url = url;
+          apiResponse.service = 'espn';
           var games = [];
           for (var i = 0; i < cfbResponse.events.length; i++) {
             var gameEvent = cfbResponse.events[i];
@@ -464,7 +543,7 @@ app.get('/scoreboard', function(request, response) {
       response.write('{"code":404,"detail":' + e + '}');
       response.end();
     });
-  } else { //historical data
+  } else if (request.query.season) { //historical data
       if (validateSeason(request.query.season) && validateWeek(request.query.week)) {
         fetchCFBHistory(request.query.season, request.query.week, response);
       } else if (validateSeason(request.query.season) && !validateWeek(request.query.week)) {
@@ -473,6 +552,8 @@ app.get('/scoreboard', function(request, response) {
         response.write('{"code":404,"detail": "error: data not found"}');
         response.end();
       }
+  } else { //detailed game data
+    fetchCFBGameHistory(request.query.game, response);
   }
 });
 
@@ -483,69 +564,67 @@ function fetchCFBHistory(season, week, orgResponse) {
   }
 
   request(url, function(error, response, body) {
-    if (season && week) {
-      if (!error) {
-        var cfbResponse = JSON.parse(body);
-        var apiResponse = {};
-        var createdGames = [];
-        apiResponse.retrievedAt = new Date();
+    if (!error) {
+      var cfbResponse = JSON.parse(body);
+      var apiResponse = {};
+      var createdGames = [];
+      apiResponse.retrievedAt = new Date();
+      apiResponse.season = season;
+      apiResponse.url = url;
+      apiResponse.service = 'cfb';
+      if (week) {
         apiResponse.week = week;
-        apiResponse.season = season;
-        apiResponse.cfbUrl = url;
+      }
 
-        if (cfbResponse.games) {
-          for (var i = 0; i < cfbResponse.games.length; i++) {
-            var apiGame = cfbResponse.games[i];
-            createdGame = createCFBGame(apiGame);
-            createdGames.push(createdGame);
-          }
-          apiResponse.games = createdGames;
-        } else {
-          console.log('ERROR: no data');
-          apiResponse = {"code":404,"detail": "error: data not found"};
+      if (cfbResponse.games) {
+        for (var i = 0; i < cfbResponse.games.length; i++) {
+          var apiGame = cfbResponse.games[i];
+          createdGame = createCFBGame(apiGame);
+          createdGames.push(createdGame);
         }
-        orgResponse.write(JSON.stringify(apiResponse, null, 2));
-        orgResponse.end();
+        apiResponse.games = createdGames;
       } else {
-        console.log('ERROR: ' + error);
-        orgResponse.write(JSON.stringify({"code":error.code,'detail': 'error: ' + error}));
-        orgResponse.end();
+        console.log('ERROR: no data');
+        apiResponse = {"code":404,"detail": "error: data not found"};
       }
-    } else if (season && !week) {
-      if (!error) {
-        var cfbResponse = JSON.parse(body);
-        var apiResponse = {};
-        var createdGames = [];
-        apiResponse.retrievedAt = new Date();
-        apiResponse.season = season;
-        apiResponse.cfbUrl = url;
-        if (cfbResponse.games) {
-          for (var i = 0; i < cfbResponse.games.length; i++) {
-            var apiGame = cfbResponse.games[i];
-            createdGame = createCFBGame(apiGame);
-            createdGames.push(createdGame);
-          }
-          apiResponse.games = createdGames;
-        } else {
-          console.log('ERROR: no data');
-          apiResponse = {"code":404,"detail": "error: data not found"};
-        }
-        orgResponse.write(JSON.stringify(apiResponse, null, 2));
-        orgResponse.end();
-      } else {
-        console.log('ERROR: ' + error);
-        orgResponse.write(JSON.stringify({"code":error.code,'detail': 'error: ' + error}));
-        orgResponse.end();
-      }
+
+      orgResponse.write(JSON.stringify(apiResponse, null, 2));
+      orgResponse.end();
     } else {
-      console.log('ERROR: no data');
-      orgResponse.write(JSON.stringify({"code":404,"detail": "error: data not found"}));
+      console.log('ERROR: ' + error);
+      orgResponse.write(JSON.stringify({"code":error.code,'detail': 'error: ' + error}));
       orgResponse.end();
     }
   });
 }
 
-//some port listening thingy
+function fetchCFBGameHistory(gameId, orgResponse) {
+  var url = 'https://collegefootballapi.com/api/1.0/games/' + gameId + '/';
+
+  request(url, function(error, response, body) {
+    if (!error) {
+      var cfbResponse = JSON.parse(body);
+      var apiResponse = {};
+      apiResponse.retrievedAt = new Date();
+      apiResponse.url = url;
+      apiResponse.service = 'cfb';
+      if (cfbResponse) {
+        Q.fcall(parseCFBJSON, apiResponse, cfbResponse, orgResponse);
+      } else {
+        console.log('ERROR: no data');
+        apiResponse = {"code":404,"detail": "error: data not found"};
+        orgReponse(JSON.stringify(apiResponse, null, 2));
+        orgReponse.end();
+      }
+    } else {
+      console.log('ERROR: ' + error);
+      orgResponse.write(JSON.stringify({"code":error.code,'detail': 'error: ' + error}));
+      orgResponse.end();
+    }
+  });
+}
+
+//post listening
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
@@ -563,4 +642,5 @@ module.exports = {
   formTeamHistoryUrl: formTeamHistoryUrl,
   createESPNGame: createESPNGame,
   createCFBGame: createCFBGame,
+  createCFBTeam: createCFBTeam
 };

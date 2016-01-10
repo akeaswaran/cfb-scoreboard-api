@@ -1,6 +1,6 @@
 {
   "name": "cfb-scoreboard-api",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Reparsing ESPN's internal college football API to make it more usable.",
   "main": "index.js",
   "scripts": {
@@ -12,6 +12,7 @@
     "ejs": "2.3.3",
     "express": "4.13.3",
     "http": "0.0.0",
+    "q": "^1.4.1",
     "request": "^2.67.0"
   },
   "engines": {
