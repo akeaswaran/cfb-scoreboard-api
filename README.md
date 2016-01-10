@@ -30,4 +30,4 @@ or
 
 ## API Documentation
 
-See https://cfb-scoreboard-api.herokuapp.com/ for details on how to consume this API.
+See https://cfb-scoreboard-api.herokuapp.com/v1/docs for details on how to consume this API.

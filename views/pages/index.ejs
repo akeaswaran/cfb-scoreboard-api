@@ -23,14 +23,13 @@
       <div class="page-header">
 				<h1 style="display:inline-block;">CFB Scoreboard API Documentation</h1>
 				<img style="display:inline-block;padding-bottom:15px;margin-left:10px;" src="https://travis-ci.org/akeaswaran/cfb-scoreboard-api.svg?branch=master"/>
-        <p class="lead">This is v0.3 of the scoreboard API. The current API prefix is <code><a href="https://cfb-scoreboard-api.herokuapp.com/scoreboard">https://cfb-scoreboard-api.herokuapp.com/scoreboard</a></code>.</p>
+        <p class="lead">This is v1.0 of the scoreboard API. The current API prefix is <code><a href="https://cfb-scoreboard-api.herokuapp.com/v1/">https://cfb-scoreboard-api.herokuapp.com/v1/</a></code>.</p>
 				<a role="button" class="btn btn-default" href="https://github.com/akeaswaran/cfb-scoreboard-api">View on GitHub</a>
 			</div>
 			<div id="nav">
 				<ul style="list-style:none;padding:0;margin:0;">
 				<li class="nav-cell"><a href="#notes">Notes</a></li>
 				<li class="nav-cell"><a href="#date">By Date</a></li>
-				<li class="nav-cell"><a href="#week">By Week</a></li>
 				<li class="nav-cell"><a href="#season">By Season</a></li>
 				<li class="nav-cell"><a href="#game">By Game</a></li>
 				<li class="nav-cell"><a href="#credits">Credits</a></li>
@@ -44,25 +43,26 @@
 					And so, this API was born.</p>
 				<p>This API is designed with FBS schools in mind, but ESPN may return FCS schools in their responses. These schools will not have links to historical data or matchup history.</p>
 				<p>All requests should be made with GET. No authentication needed.</p>
-				<p>Currently, only date, week, season, and game queries are supported. I hope to bring more functionality to this API soon.</p>
+				<p>Currently, only date, season, and game queries are supported. I hope to bring more functionality to this API soon.</p>
 			</div>
 
       <div id="date" class="nav-item">
 				<h3>Retreiving games by date</h3>
-				<h4>Parameters</h4>
-				<pre>?date={string:date}</pre>
+				<h4>Endpoints</h4>
+				<pre>.../date/{string:date}</pre>
 				<h4>Description</h4>
-				<p>Queries with this parameter will return the games played or to be played on the date given. When using this parameter, make sure to convert your date to YYYYMMDD format.</p>
-				<p><b>NOTE</b>: This parameter will only return data for the current season. If you want data from previous seasons, see the <a href="#season">seasons</a> parameter.</p>
+				<p>Queries with this endpoint will return the games played or to be played on the date given. When using this endpoint, make sure to convert your date to YYYYMMDD format.</p>
+				<p><b>NOTE</b>: This endpoint will only return data for the current season. If you want data from previous seasons, see the <a href="#season">seasons</a> endpoint.</p>
 
 				<h4>Sample request</h4>
-				<code>https://cfb-scoreboard-api.herokuapp.com/scoreboard?date=20160111</code>
+				<code>https://cfb-scoreboard-api.herokuapp.com/v1/date/20160111</code>
 				<h4>Sample reponse</h4>
 				<pre>
 {
-  "retrievedAt": "2016-01-10T03:21:38.121Z",
+  "retrievedAt": "2016-01-10T21:53:25.101Z",
   "url": "http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?calendartype=blacklist&dates=20160111",
   "service": "espn",
+  "apiVersion": "1.0",
   "games": [
     {
       "id": "400852743",
@@ -157,217 +157,83 @@
   "date": "20160111"
 }</pre>
 			</div>
-
-			<div id="week" class="nav-item">
-				<h3>Retreiving games by week</h3>
-				<h4>Parameters</h4>
-				<pre>?week={integer:week}</pre>
-				<h4>Description</h4>
-				<p>Queries with this parameter will return games played or to be played on the given week of the current season. If you want data from previous seasons, see the <a href="#season">seasons</a> parameter.</p>
-
-				<h4>Sample request</h4>
-				<code>https://cfb-scoreboard-api.herokuapp.com/scoreboard?week=10</code>
-				<h4>Sample reponse</h4>
-				<pre>
-{
-  "retrievedAt": "2016-01-09T00:28:41.048Z",
-  "week": "10",
-  "season": "2015",
-  "espnUrl": "http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?week=10",
-  "games": [
-    {
-      "id": "400787343",
-      "season": 2015,
-      "date": "2015-11-04T01:00Z",
-      "attendance": 23089,
-      "venue": {
-        "name": "Glass Bowl",
-        "city": "Toledo",
-        "state": "OH"
-      },
-      "headline": "",
-      "scores": {
-        "home": "27",
-        "away": "32"
-      },
-      "status": {
-        "clock": "0:00",
-        "type": "STATUS_FINAL",
-        "period": "F"
-      },
-      "winner": "away",
-      "odds": {
-        "spread": "N/A",
-        "overUnder": "N/A"
-      },
-      "homeTeam": {
-        "id": "2649",
-        "location": "Toledo",
-        "name": "Rockets",
-        "abbreviation": "TOL",
-        "displayName": "Toledo Rockets",
-        "color": "00488F",
-        "logoUrl": "http://a.espncdn.com/i/teamlogos/ncaa/500/2649.png",
-        "links": {
-          "clubhouse": "http://espn.go.com/college-football/team/_/id/2649",
-          "roster": "http://espn.go.com/college-football/team/roster/_/id/2649",
-          "stats": "http://espn.go.com/college-football/team/stats/_/id/2649",
-          "schedule": "http://espn.go.com/college-football/team/schedule/_/id/2649",
-          "photos": "http://espn.go.com/college-football/team/photos/_/id/2649",
-          "awards": "http://espn.go.com/college-football/awards/_/team/2649",
-          "history": "https://collegefootballapi.com/api/1.0/teams/toledo"
-        },
-        "conference": {
-          "abbreviation": "MAC",
-          "name": "Mid-American Conference"
-        },
-        "rank": 24,
-        "records": {
-          "overall": "7-1",
-          "conference": "4-1",
-          "home": "3-0",
-          "away": "4-1"
-        }
-      },
-      "awayTeam": {
-        "id": "2459",
-        "location": "Northern Illinois",
-        "name": "Huskies",
-        "abbreviation": "NIU",
-        "displayName": "Northern Illinois Huskies",
-        "color": "F1122C",
-        "logoUrl": "http://a.espncdn.com/i/teamlogos/ncaa/500/2459.png",
-        "links": {
-          "clubhouse": "http://espn.go.com/college-football/team/_/id/2459",
-          "roster": "http://espn.go.com/college-football/team/roster/_/id/2459",
-          "stats": "http://espn.go.com/college-football/team/stats/_/id/2459",
-          "schedule": "http://espn.go.com/college-football/team/schedule/_/id/2459",
-          "photos": "http://espn.go.com/college-football/team/photos/_/id/2459",
-          "awards": "http://espn.go.com/college-football/awards/_/team/2459",
-          "history": "https://collegefootballapi.com/api/1.0/teams/n_illinois"
-        },
-        "conference": {
-          "abbreviation": "MAC",
-          "name": "Mid-American Conference"
-        },
-        "rank": 99,
-        "records": {
-          "overall": "6-3",
-          "conference": "4-0",
-          "home": "2-3",
-          "away": "4-1"
-        }
-      },
-      "matchupUrl": "https://collegefootballapi.com/api/1.0/matchup/toledo/n_illinois"
-    }, ...
-  ]
-}</pre>
-
-			</div>
 			<div id="season" class="nav-item">
 				<h3>Retreiving games by season</h3>
-				<h4>Parameters</h4>
-				<pre>?season={integer:season}</pre>
-				<pre>?season={integer:season}&week={integer:week}</pre>
+				<h4>Endpoints</h4>
+				<pre>.../season/{integer:season}</pre>
+				<pre>../season/{integer:season}/week/{integer:week}</pre>
 				<h4>Description</h4>
-				<p>Queries with these parameters will return historical data for the season and week provided. Historical data is available from 1985 to 2014 via <a href="https://collegefootballapi.com">College Football API</a>.</p>
+				<p>Queries with these endpoints will return historical data for the season and week provided. Historical data is available from 1985 to 2014 via <a href="https://collegefootballapi.com">College Football API</a>.</p>
 				<p><b>NOTE</b>: While the schema for games is the same as that for the latest data from ESPN, there is not as much metadata avilable for each game.
-					To retrieve (slightly) more data for individual games, see the <a href=#game>game</a> parameter. Please submit a <a href="https://github.com/akeaswaran/cfb-scoreboard-api/pulls">pull request</a> if you find a better way to implement this.</p>
+					To retrieve (slightly) more data for individual games, see the <a href=#game>game</a> endpoint. Please submit a <a href="https://github.com/akeaswaran/cfb-scoreboard-api/pulls">pull request</a> if you find a better way to implement this.</p>
 				<h4>Sample request</h4>
-				<code>https://cfb-scoreboard-api.herokuapp.com/scoreboard?season=2014&week=10</code>
+				<code>https://cfb-scoreboard-api.herokuapp.com/v1/season/2014/week/10</code>
 				<h4>Sample reponse</h4>
 				<pre>
 {
-  "retrievedAt": "2016-01-10T03:20:43.383Z",
-  "season": "2014",
-  "url": "https://collegefootballapi.com/api/1.0/season/2014/week/10",
-  "service": "cfb",
-  "week": "10",
-  "games": [
-    {
-      "id": 103896,
-      "season": 2014,
-      "date": "2014-10-31T04:00:00.000Z",
-      "scores": {
-        "home": 14,
-        "away": 38
-      },
-      "winner": "away",
-      "status": {
-        "clock": "0:00",
-        "type": "FINAL",
-        "period": "F"
-      },
-      "awayTeam": {
-        "abbreviation": "CIN",
-        "links": {
-          "details": "https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=cincinnati"
-        }
-      },
-      "homeTeam": {
-        "abbreviation": "TULN",
-        "links": {
-          "details": "https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=tulane"
-        }
-      },
-      "links": {
-        "details": "https://collegefootballapi.com/api/1.0/games/103896/"
-      },
-      "matchupUrl": "https://collegefootballapi.com/api/1.0/matchup/tulane/cincinnati"
-    },
-    {
-      "id": 103897,
-      "season": 2014,
-      "date": "2014-10-31T04:00:00.000Z",
-      "scores": {
-        "home": 40,
-        "away": 20
-      },
-      "winner": "home",
-      "status": {
-        "clock": "0:00",
-        "type": "FINAL",
-        "period": "F"
-      },
-      "awayTeam": {
-        "abbreviation": "TLSA",
-        "links": {
-          "details": "https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=tulsa"
-        }
-      },
-      "homeTeam": {
-        "abbreviation": "MEM",
-        "links": {
-          "details": "https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=memphis"
-        }
-      },
-      "links": {
-        "details": "https://collegefootballapi.com/api/1.0/games/103897/"
-      },
-      "matchupUrl": "https://collegefootballapi.com/api/1.0/matchup/memphis/tulsa"
-    }, ...
-	]
+	[
+		{
+	  "retrievedAt": "2016-01-10T21:55:13.034Z",
+	  "season": "2014",
+	  "url": "https://collegefootballapi.com/api/1.0/season/2014/week/10",
+	  "service": "cfb",
+	  "apiVersion": "1.0",
+	  "week": "10",
+	  "games": [
+	    {
+	      "id": 103896,
+	      "season": 2014,
+	      "date": "2014-10-31T04:00:00.000Z",
+	      "scores": {
+	        "home": 14,
+	        "away": 38
+	      },
+	      "winner": "away",
+	      "status": {
+	        "clock": "0:00",
+	        "type": "FINAL",
+	        "period": "F"
+	      },
+	      "awayTeam": {
+	        "abbreviation": "CIN",
+	        "links": {
+	          "details": "https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=cincinnati"
+	        }
+	      },
+	      "homeTeam": {
+	        "abbreviation": "TULN",
+	        "links": {
+	          "details": "https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=tulane"
+	        }
+	      },
+	      "links": {
+	        "details": "https://cfb-scoreboard-api.herokuapp.com/v1/game/103896/"
+	      },
+	      "matchupUrl": "https://collegefootballapi.com/api/1.0/matchup/tulane/cincinnati"
+	    }, ...
+		]
 }</pre>
 			</div>
 			<div id="game" class="nav-item">
 				<h3>Retreiving detailed historical data for a game</h3>
-				<h4>Parameters</h4>
-				<pre>?game={integer:game_id}</pre>
+				<h4>Endpoints</h4>
+				<pre>.../game/{integer:game_id}</pre>
 				<h4>Description</h4>
-				<p>Queries with this parameter will return historical data for the game described by the <code>game_id</code>. GameIDs and historical data are available from 1985 to 2014 via <a href="https://collegefootballapi.com">College Football API</a>.</p>
-				<p>Game IDs are unique to <a href="https://collegefootballapi.com/">College Football API</a>. <b>DO NOT</b> attempt to use this parameter with Game IDs from ESPN.</p>
-				<p>A URL using this parameter is provided with each dictionary of game data. Use this after retrieving historical data for more information on individual games.</p>
-				<p><b>NOTE</b>: This parameter is a work-in-progress. Please submit a <a href="https://github.com/akeaswaran/cfb-scoreboard-api/pulls">pull request</a> if you know a better way to implement this functionality.</p>
+				<p>Queries with this endpoint will return historical data for the game described by the <code>game_id</code>. GameIDs and historical data are available from 1985 to 2014 via <a href="https://collegefootballapi.com">College Football API</a>.</p>
+				<p>Game IDs are unique to <a href="https://collegefootballapi.com/">College Football API</a>. <b>DO NOT</b> attempt to use this endpoint with Game IDs from ESPN.</p>
+				<p>A URL using this endpoint is provided with each dictionary of game data. Use this after retrieving historical data for more information on individual games.</p>
+				<p><b>NOTE</b>: This endpoint is a work-in-progress. Please submit a <a href="https://github.com/akeaswaran/cfb-scoreboard-api/pulls">pull request</a> if you know a better way to implement this functionality.</p>
 				<p><b>NOTE</b>: Data for each team comes from a database on <a href="https://fieldbook.com">Fieldbook</a>. If you find an issue with the data being returned, please file an <a href="https://github.com/akeaswaran/cfb-scoreboard-api/issues/new">issue</a>.</p>
 				<p><b>NOTE</b>: While the schema for games is the same as that for the latest data from ESPN, there is not as much metadata avilable for each game.</p>
 				<h4>Sample request</h4>
-				<code>https://cfb-scoreboard-api.herokuapp.com/scoreboard?game=116528</code>
+				<code>https://cfb-scoreboard-api.herokuapp.com/v1/game/116528</code>
 				<h4>Sample reponse</h4>
 				<pre>
 {
-  "retrievedAt": "2016-01-10T02:48:38.505Z",
-  "url": "https://collegefootballapi.com/api/1.0/games/116528/",
+  "retrievedAt": "2016-01-10T21:56:49.486Z",
+  "url": "https://collegefootballapi.com/api/1.0/games/116528",
   "service": "cfb",
+  "apiVersion": "1.0",
   "game": {
     "id": 116528,
     "season": 2015,
@@ -413,7 +279,7 @@
       }
     },
     "links": {
-      "details": "https://collegefootballapi.com/api/1.0/games/116528/"
+      "details": "https://cfb-scoreboard-api.herokuapp.com/v1/game/116528/"
     },
     "matchupUrl": "https://collegefootballapi.com/api/1.0/matchup/troy/ga_southern"
   }
@@ -424,7 +290,7 @@
 	      <p><a href="https://collegefootballapi.com">College Football API</a> for historical data.</p>
 	      <p><a href="https://espn.go.com">ESPN.com</a> for shutting down their public API and inspiring me to build this off their new one.</p>
 				<p><a href="https://heroku.com">Heroku</a> for hosting this app.</p>
-				<p><a href="https://fieldbook.com">Fieldbook</a> for hosting the database of team details.</p>
+				<p><a href="https://fieldbook.com">Fieldbook</a> for hosting the database of team information.</p>
 	      <p><a href="https://github.com/epmatsw">epmatsw</a>'s <a href="https://github.com/epmatsw/CFBHistory">CFBHistory</a> project for its list of College Football API team identifiers.</p>
 				<p><a href="https://reddit.com/r/cfb">/r/CFB</a>'s <a href="https://www.reddit.com/r/CFB/wiki/abbreviations">wiki</a> for a list of FBS team abbreviations.</p>
 			</div>
@@ -432,7 +298,7 @@
 			<footer class="bd-footer text-muted" style="text-align:center;padding-bottom:20px;" role="contentinfo">
 			<div class="container">
 				<p>Built by <a id="github" href="https://github.com/akeaswaran">@akeaswaran</a>.</p>
-				<p>Currently v0.3. Code licensed <a id="license" href="https://github.com/akeaswaran/cfb-scoreboard-api/blob/master/LICENSE.md">MIT</a>.</p>
+				<p>Currently v1.0. Code licensed <a id="license" href="https://github.com/akeaswaran/cfb-scoreboard-api/blob/master/LICENSE.md">MIT</a>.</p>
 				<a href="#top" style="text-align:right;">Back to top</a>
 			</div>
 		</footer>

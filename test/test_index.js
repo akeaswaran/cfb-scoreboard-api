@@ -298,13 +298,6 @@ describe('formTeamHistoryUrl(value)', function() {
     });
 });
 
-/* this test is long and I am too lazy to write it. Please write this test for me and submit a pull request. :)
-describe('createESPNGame(value)', function() {
-    it('createCFBGame should return a correctly formatted dictionary from a given JSON input from ESPN', function () {
-
-    });
-});*/
-
 describe('createCFBGame(value)', function() {
     it('createCFBGame should return a correctly formatted dictionary from a given JSON input from CFBAPI', function () {
       var apiGame = {};

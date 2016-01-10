@@ -1,6 +1,6 @@
 {
   "name": "cfb-scoreboard-api",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Reparsing ESPN's internal college football API to make it more usable.",
   "main": "index.js",
   "scripts": {
@@ -31,7 +31,6 @@
   "license": "MIT",
   "devDependencies": {
     "chai": "^3.4.1",
-    "mocha": "^2.3.4",
-    "should": "^8.0.2"
+    "mocha": "^2.3.4"
   }
 }
