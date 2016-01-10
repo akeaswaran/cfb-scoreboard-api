@@ -374,7 +374,7 @@ function getCFBTeamData(url, callback) {
       //console.log('PARSING BODY: ' + body);
       callback(JSON.parse(body));
     } else {
-      //console.log('ERROR: ' + error);
+      console.log('ERROR: ' + error);
       callback({'code' : 404, 'error' : error});
     }
   });

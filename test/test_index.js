@@ -1,5 +1,5 @@
 var assert = require('assert');
-var main = require("../index.js");
+var main = require('../index.js');
 
 describe('validateDate(value)', function() {
     it('validateDate should return true for correctly formatted dates', function () {
@@ -134,7 +134,7 @@ describe('getTeamAbbreviation(value)', function() {
 
 describe('createESPNTeam(value)', function() {
     it('getESPNTeam should return a correctly formatted dictionary given a dictionary from ESPN', function () {
-      var inputJSON = '{\"id\":\"254\",\"uid\":\"s:20~l:23~t:254\",\"type\":\"team\",\"homeAway\":\"home\",\"team\":{\"id\":\"254\",\"uid\":\"s:20~l:23~t:254\",\"location\":\"Utah\",\"name\":\"Utes\",\"abbreviation\":\"UTAH\",\"displayName\":\"Utah Utes\",\"shortDisplayName\":\"Utes\",\"color\":\"890012\",\"isActive\":true,\"venue\":{\"id\":\"587\"},\"links\":[{\"rel\":[\"clubhouse\",\"desktop\"],\"href\":\"http:\/\/espn.go.com\/college-football\/team\/_\/id\/254\",\"text\":\"Clubhouse\",\"isExternal\":false,\"isPremium\":false},{\"rel\":[\"roster\",\"desktop\"],\"href\":\"http:\/\/espn.go.com\/college-football\/team\/roster\/_\/id\/254\",\"text\":\"Roster\",\"isExternal\":false,\"isPremium\":false},{\"rel\":[\"stats\",\"desktop\"],\"href\":\"http:\/\/espn.go.com\/college-football\/team\/stats\/_\/id\/254\",\"text\":\"Statistics\",\"isExternal\":false,\"isPremium\":false},{\"rel\":[\"schedule\",\"desktop\"],\"href\":\"http:\/\/espn.go.com\/college-football\/team\/schedule\/_\/id\/254\",\"text\":\"Schedule\",\"isExternal\":false,\"isPremium\":false},{\"rel\":[\"photos\",\"desktop\"],\"href\":\"http:\/\/espn.go.com\/college-football\/team\/photos\/_\/id\/254\",\"text\":\"photos\",\"isExternal\":false,\"isPremium\":false},{\"rel\":[\"stadium\",\"desktop\"],\"href\":\"http:\/\/espn.go.com\/college-football\/team\/stadium\/_\/id\/254\",\"text\":\"Stadium\",\"isExternal\":false,\"isPremium\":false},{\"rel\":[\"awards\",\"desktop\"],\"href\":\"http:\/\/espn.go.com\/college-football\/awards\/_\/team\/254\",\"text\":\"Awards\",\"isExternal\":false,\"isPremium\":false}],\"conferenceId\":\"9\",\"logo\":\"http:\/\/a.espncdn.com\/i\/teamlogos\/ncaa\/500\/254.png\"},\"score\":\"35\",\"linescores\":[{\"value\":35.0},{\"value\":0.0},{\"value\":0.0},{\"value\":0.0}],\"statistics\":[],\"curatedRank\":{\"current\":22},\"winner\":true,\"records\":[{\"name\":\"YTD\",\"abbreviation\":\"Game\",\"type\":\"total\",\"summary\":\"10-3\"},{\"name\":\"Home\",\"type\":\"home\",\"summary\":\"6-1\"},{\"name\":\"Road\",\"type\":\"road\",\"summary\":\"3-2\"},{\"name\":\"vs. Conf.\",\"type\":\"vsconf\",\"summary\":\"6-3\"}]}';
+      var inputJSON = '{\'id\':\'254\',\'uid\':\'s:20~l:23~t:254\',\'type\':\'team\',\'homeAway\':\'home\',\'team\':{\'id\':\'254\',\'uid\':\'s:20~l:23~t:254\',\'location\':\'Utah\',\'name\':\'Utes\',\'abbreviation\':\'UTAH\',\'displayName\':\'Utah Utes\',\'shortDisplayName\':\'Utes\',\'color\':\'890012\',\'isActive\':true,\'venue\':{\'id\':\'587\'},\'links\':[{\'rel\':[\'clubhouse\',\'desktop\'],\'href\':\'http:\/\/espn.go.com\/college-football\/team\/_\/id\/254\',\'text\':\'Clubhouse\',\'isExternal\':false,\'isPremium\':false},{\'rel\':[\'roster\',\'desktop\'],\'href\':\'http:\/\/espn.go.com\/college-football\/team\/roster\/_\/id\/254\',\'text\':\'Roster\',\'isExternal\':false,\'isPremium\':false},{\'rel\':[\'stats\',\'desktop\'],\'href\':\'http:\/\/espn.go.com\/college-football\/team\/stats\/_\/id\/254\',\'text\':\'Statistics\',\'isExternal\':false,\'isPremium\':false},{\'rel\':[\'schedule\',\'desktop\'],\'href\':\'http:\/\/espn.go.com\/college-football\/team\/schedule\/_\/id\/254\',\'text\':\'Schedule\',\'isExternal\':false,\'isPremium\':false},{\'rel\':[\'photos\',\'desktop\'],\'href\':\'http:\/\/espn.go.com\/college-football\/team\/photos\/_\/id\/254\',\'text\':\'photos\',\'isExternal\':false,\'isPremium\':false},{\'rel\':[\'stadium\',\'desktop\'],\'href\':\'http:\/\/espn.go.com\/college-football\/team\/stadium\/_\/id\/254\',\'text\':\'Stadium\',\'isExternal\':false,\'isPremium\':false},{\'rel\':[\'awards\',\'desktop\'],\'href\':\'http:\/\/espn.go.com\/college-football\/awards\/_\/team\/254\',\'text\':\'Awards\',\'isExternal\':false,\'isPremium\':false}],\'conferenceId\':\'9\',\'logo\':\'http:\/\/a.espncdn.com\/i\/teamlogos\/ncaa\/500\/254.png\'},\'score\':\'35\',\'linescores\':[{\'value\':35.0},{\'value\':0.0},{\'value\':0.0},{\'value\':0.0}],\'statistics\':[],\'curatedRank\':{\'current\':22},\'winner\':true,\'records\':[{\'name\':\'YTD\',\'abbreviation\':\'Game\',\'type\':\'total\',\'summary\':\'10-3\'},{\'name\':\'Home\',\'type\':\'home\',\'summary\':\'6-1\'},{\'name\':\'Road\',\'type\':\'road\',\'summary\':\'3-2\'},{\'name\':\'vs. Conf.\',\'type\':\'vsconf\',\'summary\':\'6-3\'}]}';
       var inputDict = {};
       inputDict.id = '254';
       inputDict.uid = 's:20~l:23~t:254';
@@ -153,97 +153,97 @@ describe('createESPNTeam(value)', function() {
       inputDict.curatedRank.current = '22';
       inputDict.records = [
         {
-          "name" : 'YTD',
-          "abbreviation" : 'Game',
-          "type" : 'total',
-          "summary" : '10-3'
+          'name' : 'YTD',
+          'abbreviation' : 'Game',
+          'type' : 'total',
+          'summary' : '10-3'
         },
         {
-          "name" : 'Home',
-          "type" : 'home',
-          "summary" : '6-1'
+          'name' : 'Home',
+          'type' : 'home',
+          'summary' : '6-1'
         },
         {
-          "name" : 'Road',
-          "type" : 'road',
-          "summary" : '3-2'
+          'name' : 'Road',
+          'type' : 'road',
+          'summary' : '3-2'
         },
         {
-          "name" : 'vs. Conf.',
-          "type" : 'vsconf',
-          "summary" : '6-3'
+          'name' : 'vs. Conf.',
+          'type' : 'vsconf',
+          'summary' : '6-3'
         }
       ];
       inputDict.team.links = [
         {
-          "rel" : [
+          'rel' : [
             'clubhouse',
             'desktop'
           ],
-          "href" : 'http://espn.go.com/college-football/team/_/id/254',
-          "text" : 'Clubhouse',
-          "isExternal" : false,
-          "isPremium" : false
+          'href' : 'http://espn.go.com/college-football/team/_/id/254',
+          'text' : 'Clubhouse',
+          'isExternal' : false,
+          'isPremium' : false
         },
         {
-          "rel" : [
+          'rel' : [
             'roster',
             'desktop'
           ],
-          "href" : 'http://espn.go.com/college-football/team/roster/_/id/254',
-          "text" : 'Roster',
-          "isExternal" : false,
-          "isPremium" : false
+          'href' : 'http://espn.go.com/college-football/team/roster/_/id/254',
+          'text' : 'Roster',
+          'isExternal' : false,
+          'isPremium' : false
         },
         {
-          "rel" : [
+          'rel' : [
             'stats',
             'desktop'
           ],
-          "href" : 'http://espn.go.com/college-football/team/stats/_/id/254',
-          "text" : 'Statistics',
-          "isExternal" : false,
-          "isPremium" : false
+          'href' : 'http://espn.go.com/college-football/team/stats/_/id/254',
+          'text' : 'Statistics',
+          'isExternal' : false,
+          'isPremium' : false
         },
         {
-          "rel" : [
+          'rel' : [
             'schedule',
             'desktop'
           ],
-          "href" : 'http://espn.go.com/college-football/team/schedule/_/id/254',
-          "text" : 'Schedule',
-          "isExternal" : false,
-          "isPremium" : false
+          'href' : 'http://espn.go.com/college-football/team/schedule/_/id/254',
+          'text' : 'Schedule',
+          'isExternal' : false,
+          'isPremium' : false
         },
         {
-          "rel" : [
+          'rel' : [
             'photos',
             'desktop'
           ],
-          "href" : 'http://espn.go.com/college-football/team/photos/_/id/254',
-          "text" : 'photos',
-          "isExternal" : false,
-          "isPremium" : false
+          'href' : 'http://espn.go.com/college-football/team/photos/_/id/254',
+          'text' : 'photos',
+          'isExternal' : false,
+          'isPremium' : false
         },
         {
-          "rel" : [
+          'rel' : [
             'stadium',
             'desktop'
           ],
-          "href" : 'http://espn.go.com/college-football/team/stadium/_/id/254',
-          "text" : 'Stadium',
-          "isExternal" : false,
-          "isPremium" : false
+          'href' : 'http://espn.go.com/college-football/team/stadium/_/id/254',
+          'text' : 'Stadium',
+          'isExternal' : false,
+          'isPremium' : false
         },
         {
-          "rel" : [
+          'rel' : [
             'awards',
             'desktop'
           ],
-          "href" : 'http://espn.go.com/college-football/awards/_/team/254',
-          "text" : 'Awards',
-          "isExternal" : false,
-          "isPremium" : false
+          'href' : 'http://espn.go.com/college-football/awards/_/team/254',
+          'text' : 'Awards',
+          'isExternal' : false,
+          'isPremium' : false
         }
       ];
 
@@ -298,14 +298,80 @@ describe('formTeamHistoryUrl(value)', function() {
     });
 });
 
+/* this test is long and I am too lazy to write it. Please write this test for me and submit a pull request. :)
 describe('createESPNGame(value)', function() {
     it('createCFBGame should return a correctly formatted dictionary from a given JSON input from ESPN', function () {
 
     });
-});
+});*/
 
 describe('createCFBGame(value)', function() {
     it('createCFBGame should return a correctly formatted dictionary from a given JSON input from CFBAPI', function () {
+      var apiGame = {};
+      apiGame.id = 116158;
+      apiGame.date = {
+        'day': 26,
+        'month': 9,
+        'year': 2015
+      };
+      apiGame.results = {
+        'away_score': 56,
+        'home_score': 30,
+        'loser': 'arizona',
+        'neutral_site': '',
+        'time': 'FINAL',
+        'winner': 'ucla'
+      };
+      apiGame.season = {
+        'season': 2015,
+        'week': 4
+      };
+      apiGame.teams = {
+        'away_team': 'ucla',
+        'away_team_id': null,
+        'home_team': 'arizona',
+        'home_team_id': null
+      };
 
+      var createdGame = main.createCFBGame(apiGame);
+      assert.deepEqual(createdGame.homeTeam, {'abbreviation' : 'ARIZ', 'links' : {'details':'https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=arizona'}});
+      assert.deepEqual(createdGame.awayTeam, {'abbreviation' : 'UCLA', 'links' : {'details':'https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=ucla'}});
+      assert.deepEqual(createdGame.links.details, 'https://cfb-scoreboard-api.herokuapp.com/scoreboard?game=116158/');
+      assert.deepEqual(createdGame.matchupUrl, 'https://collegefootballapi.com/api/1.0/matchup/arizona/ucla');
+      assert.deepEqual(createdGame.winner, 'away');
+      assert.deepEqual(createdGame.scores.away, 56);
+      assert.deepEqual(createdGame.scores.home, 30);
+      assert.deepEqual(createdGame.date, (new Date(2015, 8, 26, 0, 0, 0, 0)).toISOString());
+      assert.deepEqual(createdGame.id, 116158);
+      assert.deepEqual(createdGame.season, 2015);
+    });
+});
+
+describe('createCFBTeam(value)', function() {
+    it('createCFBTeam should return a correctly formatted dictionary from a given JSON input from CFBAPI', function () {
+      var jsonTeam = {};
+      jsonTeam.abbreviation = 'GT';
+      jsonTeam.common_name = 'Georgia Tech';
+      jsonTeam.conference = [];
+      jsonTeam.conference[0] = {};
+      jsonTeam.conference[0].id = 2;
+      jsonTeam.conference[0].identifier = 'acc';
+      jsonTeam.full_name = 'Georgia Institute of Technology';
+      jsonTeam.id = 38;
+      jsonTeam.location = 'Atlanta, GA';
+      jsonTeam.logo_url = null;
+      jsonTeam.mascot = 'Yellow Jackets';
+      jsonTeam.team_name = 'georgia_tech';
+
+      main.createCFBTeam([jsonTeam], function(testTeam) {
+        assert.deepEqual(testTeam.id, jsonTeam.id);
+        assert.deepEqual(testTeam.name, jsonTeam.mascot);
+        assert.deepEqual(testTeam.displayName, jsonTeam.common_name + ' ' + jsonTeam.mascot);
+        assert.deepEqual(testTeam.location, jsonTeam.location);
+        assert.deepEqual(testTeam.abbreviation, jsonTeam.abbreviation);
+        assert.deepEqual(testTeam.conference, {'abbreviation' : 'ACC', 'name' : 'Atlantic Coast Conference'});
+        assert.deepEqual(testTeam.links.details, 'https://collegefootballapi.com/api/1.0/teams/georgia_tech');
+        assert.deepEqual(testTeam.links.history, 'https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=georgia_tech');
+      });
     });
 });
