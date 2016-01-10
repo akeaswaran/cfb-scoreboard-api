@@ -599,7 +599,7 @@ function fetchCFBHistory(season, week, orgResponse) {
 }
 
 function fetchCFBGameHistory(gameId, orgResponse) {
-  var url = 'https://collegefootballapi.com/api/1.0/games/' + gameId + '/';
+  var url = 'https://collegefootballapi.com/api/1.0/games/' + gameId;
 
   request(url, function(error, response, body) {
     if (!error) {
