@@ -482,10 +482,14 @@ Date.prototype.yyyymmdd = function() {
   return yyyy + (mm[1] ? mm: '0' + mm[0]) + (dd[1] ? dd: '0' + dd[0]);
 };
 
-function fetchCFBHistory(season, week, orgResponse) {
+function fetchCFBHistory(season, week, count, orgResponse) {
   var url = 'https://collegefootballapi.com/api/1.0/season/' + season + '/';
   if (week) {
       url = 'https://collegefootballapi.com/api/1.0/season/' + season + '/week/' + week;
+  }
+
+  if (count) {
+    url = url + '?limit=' + count;
   }
 
   request(url, function(error, response, body) {
@@ -498,6 +502,7 @@ function fetchCFBHistory(season, week, orgResponse) {
       apiResponse.url = url;
       apiResponse.service = 'cfb';
       apiResponse.apiVersion = version + '.0';
+
       if (week) {
         apiResponse.week = week;
       }
@@ -680,7 +685,7 @@ app.get('/v' + version + '/season/', function(request, response) {
 
 app.get('/v' + version + '/season/:season', function(request, response) {
   if (validateSeason(request.params.season)) {
-    fetchCFBHistory(request.params.season, null, response);
+    fetchCFBHistory(request.params.season, null, request.query.count, response);
   } else {
     var apiResponse = {'code':404,'error': 'data not found'};
     response.write(JSON.stringify(apiResponse, null, 2));
@@ -696,7 +701,7 @@ app.get('/v' + version + '/season/:season/week/', function(request, response) {
 
 app.get('/v' + version + '/season/:season/week/:week', function(request, response) {
   if (validateSeason(request.params.season) && validateWeek(request.params.week)) {
-    fetchCFBHistory(request.params.season, request.params.week, response);
+    fetchCFBHistory(request.params.season, request.params.week, request.query.count, response);
   } else {
     var apiResponse = {'code':404,'error': 'data not found'};
     response.write(JSON.stringify(apiResponse, null, 2));
