@@ -492,14 +492,21 @@ function fetchCFBHistory(season, week, count, orgResponse) {
     url = url + '?limit=' + count;
   }
 
-  request(url, function(error, response, body) {
+  var options = {
+    url: url,
+    headers: {
+    'Authorization': 'apikey 393bd3f566496a3a16a6abf0dcb0d9ae-cfbapi'
+    }
+  };
+
+  request(options, function(error, response, body) {
     if (!error) {
       var cfbResponse = JSON.parse(body);
       var apiResponse = {};
       var createdGames = [];
       apiResponse.retrievedAt = new Date();
       apiResponse.season = season;
-      apiResponse.url = url;
+      apiResponse.url = options.url;
       apiResponse.service = 'cfb';
       apiResponse.apiVersion = version + '.0';
 
@@ -530,14 +537,19 @@ function fetchCFBHistory(season, week, count, orgResponse) {
 }
 
 function fetchCFBGameHistory(gameId, orgResponse) {
-  var url = 'https://collegefootballapi.com/api/1.0/games/' + gameId;
+  var options = {
+    url: 'https://collegefootballapi.com/api/1.0/games/' + gameId,
+    headers: {
+    'Authorization': 'apikey 393bd3f566496a3a16a6abf0dcb0d9ae-cfbapi'
+    }
+  };
 
-  request(url, function(error, response, body) {
+  request(options, function(error, response, body) {
     if (!error) {
       var cfbResponse = JSON.parse(body);
       var apiResponse = {};
       apiResponse.retrievedAt = new Date();
-      apiResponse.url = url;
+      apiResponse.url = options.url;
       apiResponse.service = 'cfb';
       apiResponse.apiVersion = version + '.0';
       if (cfbResponse) {
