@@ -15,3 +15,6 @@ notifications:
       - akeaswaran@me.com
     on_success: never
     on_failure: always
+addons:
+    code_climate:
+        repo_token: e95ed87dd9acff9a050ddc43f8877e198b89e065ed0e7b7f90ebb47a7e0114b9
