@@ -4,6 +4,8 @@ A simple college football JSON API that re-parses ESPN's internal college footba
 
 Built with [Node.js](http://nodejs.org/) and [Heroku](https://heroku.com/).
 
+### NOTE: the historical data API hosted at https://collegefootballapi.com that this service uses has gone down. Please refrain from using historical data for now.
+
 ## Running Locally
 
 Make sure you have [Node.js](http://nodejs.org/) and the [Heroku Toolbelt](https://toolbelt.heroku.com/) installed.
