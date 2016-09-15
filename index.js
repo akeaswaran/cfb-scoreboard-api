@@ -250,8 +250,8 @@ function createESPNTeam(competitorDict) {
   if (competitorDict.records && competitorDict.records.length > 0) {
     if (competitorDict.records.length == 3) {
       team.records.overall = competitorDict.records[0].summary;
-      team.records.home = competitorDict.records[2].summary;
-      team.records.away = competitorDict.records[3].summary;
+      team.records.home = competitorDict.records[1].summary;
+      team.records.away = competitorDict.records[2].summary;
     } else if (competitorDict.records.length == 4) {
       team.records.overall = competitorDict.records[0].summary;
       team.records.conference = competitorDict.records[1].summary;
