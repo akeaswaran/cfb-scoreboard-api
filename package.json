@@ -9,7 +9,7 @@
     "build": "npm run test && npm run start"
   },
   "dependencies": {
-    "ejs": "2.5.3",
+    "ejs": "2.5.5",
     "express": "4.14.0",
     "http": "0.0.0",
     "q": "^1.4.1",
