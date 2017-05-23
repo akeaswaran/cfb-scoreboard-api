@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "ejs": "2.5.5",
-    "express": "4.15.2",
+    "express": "4.15.3",
     "http": "0.0.0",
     "q": "^1.4.1",
     "request": "^2.67.0"
