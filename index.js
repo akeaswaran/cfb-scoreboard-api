@@ -303,16 +303,16 @@ function createESPNGame(gameEvent) {
   if (game.status.type == 'STATUS_FINAL' || game.status.type == 'STATUS_SCHEDULED') {
     if (parseInt(game.scores.home) > parseInt(game.scores.away)) {
       game.winner.draw = 'home';
-      game.winner.id = game.homeTeam.id;
-      game.winner.abbreviation = game.homeTeam.abbreviation;
-      game.winner.location = game.homeTeam.location;
-      game.winner.logoUrl = game.homeTeam.logoUrl;
+      game.winner.id = homeTeam.id;
+      game.winner.abbreviation = homeTeam.abbreviation;
+      game.winner.location = homeTeam.location;
+      game.winner.logoUrl = homeTeam.logoUrl;
     } else if (parseInt(game.scores.home) < parseInt(game.scores.away)) {
       game.winner.draw = 'away';
-      game.winner.id = game.awayTeam.id;
-      game.winner.abbreviation = game.awayTeam.abbreviation;
-      game.winner.location = game.awayTeam.location;
-      game.winner.logoUrl = game.awayTeam.logoUrl;
+      game.winner.id = awayTeam.id;
+      game.winner.abbreviation = awayTeam.abbreviation;
+      game.winner.location = awayTeam.location;
+      game.winner.logoUrl = awayTeam.logoUrl;
     } else {
       game.winner.draw = null;
       game.winner.id = null;
