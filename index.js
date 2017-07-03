@@ -320,16 +320,6 @@ function createESPNGame(gameEvent) {
     }
   }
 
-  //Odds
-  game.odds = {};
-  if (gameEvent.competitions[0].odds) {
-    game.odds.spread = gameEvent.competitions[0].odds[0].details;
-    game.odds.overUnder = gameEvent.competitions[0].odds[0].overUnder;
-  } else {
-    game.odds.spread = 'N/A';
-    game.odds.overUnder = 'N/A';
-  }
-
   //Teams
   game.homeTeam = createESPNTeam(gameEvent.competitions[0].competitors[0]);
   game.awayTeam = createESPNTeam(gameEvent.competitions[0].competitors[1]);
@@ -341,6 +331,17 @@ function createESPNGame(gameEvent) {
   } else {
     game.matchupUrl = '';
   }
+
+  //Odds
+  game.odds = {};
+  if (gameEvent.competitions[0].odds) {
+    game.odds.spread = gameEvent.competitions[0].odds[0].details;
+    game.odds.overUnder = gameEvent.competitions[0].odds[0].overUnder;
+  } else {
+    game.odds.spread = 'N/A';
+    game.odds.overUnder = 'N/A';
+  }
+
   return game;
 }
 
