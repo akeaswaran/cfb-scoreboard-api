@@ -299,26 +299,31 @@ function createESPNGame(gameEvent) {
   game.status = {};
   game.status.clock = gameEvent.status.displayClock;
   game.status.type = gameEvent.status.type.name;
-  game.winner = {};
   if (game.status.type == 'STATUS_FINAL' || game.status.type == 'STATUS_SCHEDULED') {
     if (parseInt(game.scores.home) > parseInt(game.scores.away)) {
-      game.winner.draw = 'home';
-      game.winner.id = homeTeam.id;
-      game.winner.abbreviation = homeTeam.abbreviation;
-      game.winner.location = homeTeam.location;
-      game.winner.logoUrl = homeTeam.logoUrl;
+      game.winner = 'home';
+      game.winnerDetails = {};
+      game.winnerDetails.draw = 'home';
+      game.winnerDetails.id = homeTeam.id;
+      game.winnerDetails.abbreviation = homeTeam.abbreviation;
+      game.winnerDetails.location = homeTeam.location;
+      game.winnerDetails.logoUrl = homeTeam.logoUrl;
     } else if (parseInt(game.scores.home) < parseInt(game.scores.away)) {
-      game.winner.draw = 'away';
-      game.winner.id = awayTeam.id;
-      game.winner.abbreviation = awayTeam.abbreviation;
-      game.winner.location = awayTeam.location;
-      game.winner.logoUrl = awayTeam.logoUrl;
+      game.winner = 'away';
+      game.winnerDetails = {};
+      game.winnerDetails.draw = 'away';
+      game.winnerDetails.id = awayTeam.id;
+      game.winnerDetails.abbreviation = awayTeam.abbreviation;
+      game.winnerDetails.location = awayTeam.location;
+      game.winnerDetails.logoUrl = awayTeam.logoUrl;
     } else {
-      game.winner.draw = null;
-      game.winner.id = null;
-      game.winner.abbreviation = null;
-      game.winner.location = null;
-      game.winner.logoUrl = null;
+      game.winner = null;
+      game.winnerDetails = {};
+      game.winnerDetails.draw = null;
+      game.winnerDetails.id = null;
+      game.winnerDetails.abbreviation = null;
+      game.winnerDetails.location = null;
+      game.winnerDetails.logoUrl = null;
     }
 
     if (game.status.type == 'STATUS_FINAL') {
