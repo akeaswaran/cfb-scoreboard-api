@@ -278,6 +278,8 @@ function createESPNGame(gameEvent) {
   game.venue.name = gameEvent.competitions[0].venue.fullName;
   game.venue.city = gameEvent.competitions[0].venue.address.city;
   game.venue.state = gameEvent.competitions[0].venue.address.state;
+  game.neutralSite = gameEvent.competitions[0].neutralSite;
+  game.conferenceGame = gameEvent.competitions[0].conferenceCompetition;
   if (gameEvent.competitions[0].notes && gameEvent.competitions[0].notes.length > 0) {
     game.headline = gameEvent.competitions[0].notes[0].headline;
   } else {
