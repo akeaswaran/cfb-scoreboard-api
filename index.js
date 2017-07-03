@@ -336,10 +336,48 @@ function createESPNGame(gameEvent) {
   game.odds = {};
   if (gameEvent.competitions[0].odds) {
     game.odds.spread = gameEvent.competitions[0].odds[0].details;
+    if (game.odds.spread.search("even") >= 0) {
+      game.odds.spreadValue = 0;
+    } else if (game.odds.spread.search(" -") < 0) {
+      game.odds.spreadValue = null;
+    } else {
+      game.odds.spreadValue = parseInt(game.odds.spread.substr(game.odds.spread.search(" -") + 2));
+    }
     game.odds.overUnder = gameEvent.competitions[0].odds[0].overUnder;
+
+    // favorites info
+    game.odds.favorite = {};
+    if (game.odds.spread.search(game.homeTeam.abbreviation) < 0 && game.odds.spread.search(game.awayTeam.abbreviation) < 0) {
+      game.odds.favorite.id = 'N/A';
+      game.odds.favorite.abbreviation = 'N/A';
+      game.odds.favorite.location = 'N/A';
+      game.odds.favorite.logoUrl = 'N/A';
+    } else if (game.odds.spread.search(game.homeTeam.abbreviation) >= 0) {
+      game.odds.favorite.id = game.homeTeam.id;
+      game.odds.favorite.abbreviation = game.homeTeam.abbreviation;
+      game.odds.favorite.location = game.homeTeam.location;
+      game.odds.favorite.logoUrl = game.homeTeam.logoUrl;
+    } else if (game.odds.spread.search(game.awayTeam.abbreviation) >= 0) {
+      game.odds.favorite.id = game.awayTeam.id;
+      game.odds.favorite.abbreviation = game.awayTeam.abbreviation;
+      game.odds.favorite.location = game.awayTeam.location;
+      game.odds.favorite.logoUrl = game.awayTeam.logoUrl;
+    } else {
+      game.odds.favorite.id = 'N/A';
+      game.odds.favorite.abbreviation = 'N/A';
+      game.odds.favorite.location = 'N/A';
+      game.odds.favorite.logoUrl = 'N/A';
+    }
+
   } else {
     game.odds.spread = 'N/A';
+    game.odds.spreadValue = 'N/A';
     game.odds.overUnder = 'N/A';
+    game.odds.favorite = {};
+    game.odds.favorite.id = 'N/A';
+    game.odds.favorite.abbreviation = 'N/A';
+    game.odds.favorite.location = 'N/A';
+    game.odds.favorite.logoUrl = 'N/A';
   }
 
   return game;
