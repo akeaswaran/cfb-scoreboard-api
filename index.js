@@ -358,12 +358,12 @@ function createESPNGame(gameEvent) {
   game.odds = {};
   if (gameEvent.competitions[0].odds) {
     game.odds.spread = gameEvent.competitions[0].odds[0].details;
-    if (game.odds.spread.search("even") >= 0) {
+    if (game.odds.spread.search('even') >= 0) {
       game.odds.spreadValue = 0;
-    } else if (game.odds.spread.search(" -") < 0) {
+    } else if (game.odds.spread.search(' -') < 0) {
       game.odds.spreadValue = null;
     } else {
-      game.odds.spreadValue = parseInt(game.odds.spread.substr(game.odds.spread.search(" -") + 2));
+      game.odds.spreadValue = parseInt(game.odds.spread.substr(game.odds.spread.search(' -') + 2));
     }
     game.odds.overUnder = gameEvent.competitions[0].odds[0].overUnder;
 
