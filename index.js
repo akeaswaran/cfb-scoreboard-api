@@ -282,6 +282,8 @@ function createESPNGame(gameEvent) {
   game.conferenceGame = gameEvent.competitions[0].conferenceCompetition;
   if (gameEvent.competitions[0].notes && gameEvent.competitions[0].notes.length > 0) {
     game.headline = gameEvent.competitions[0].notes[0].headline;
+  } else if (gameEvent.competitions[0].competitors[0].team.location) {
+    game.headline = gameEvent.competitions[0].competitors[1].team.location + ' vs. ' + gameEvent.competitions[0].competitors[0].team.location;
   } else {
     game.headline = '';
   }
