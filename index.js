@@ -228,6 +228,7 @@ function createESPNTeam(competitorDict) {
   team.abbreviation = competitorDict.team.abbreviation;
   team.displayName = competitorDict.team.displayName;
   team.color = competitorDict.team.color;
+  team.alternateColor = competitorDict.team.alternateColor;
   team.logoUrl = competitorDict.team.logo;
   team.links = {};
   if (competitorDict.team.links && competitorDict.team.links.length > 0) {
