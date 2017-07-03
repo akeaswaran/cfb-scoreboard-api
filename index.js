@@ -269,6 +269,10 @@ function createESPNTeam(competitorDict) {
 function createESPNGame(gameEvent) {
   var game = {};
 
+  //Teams
+  var homeTeam = createESPNTeam(gameEvent.competitions[0].competitors[0]);
+  var awayTeam = createESPNTeam(gameEvent.competitions[0].competitors[1]);
+
   //Basic game data
   game.id = gameEvent.id;
   game.season = gameEvent.season.year;
@@ -295,13 +299,26 @@ function createESPNGame(gameEvent) {
   game.status = {};
   game.status.clock = gameEvent.status.displayClock;
   game.status.type = gameEvent.status.type.name;
+  game.winner = {};
   if (game.status.type == 'STATUS_FINAL' || game.status.type == 'STATUS_SCHEDULED') {
     if (parseInt(game.scores.home) > parseInt(game.scores.away)) {
-      game.winner = 'home';
+      game.winner.draw = 'home';
+      game.winner.id = game.homeTeam.id;
+      game.winner.abbreviation = game.homeTeam.abbreviation;
+      game.winner.location = game.homeTeam.location;
+      game.winner.logoUrl = game.homeTeam.logoUrl;
     } else if (parseInt(game.scores.home) < parseInt(game.scores.away)) {
-      game.winner = 'away';
+      game.winner.draw = 'away';
+      game.winner.id = game.awayTeam.id;
+      game.winner.abbreviation = game.awayTeam.abbreviation;
+      game.winner.location = game.awayTeam.location;
+      game.winner.logoUrl = game.awayTeam.logoUrl;
     } else {
-      game.winner = null;
+      game.winner.draw = null;
+      game.winner.id = null;
+      game.winner.abbreviation = null;
+      game.winner.location = null;
+      game.winner.logoUrl = null;
     }
 
     if (game.status.type == 'STATUS_FINAL') {
@@ -321,8 +338,8 @@ function createESPNGame(gameEvent) {
   }
 
   //Teams
-  game.homeTeam = createESPNTeam(gameEvent.competitions[0].competitors[0]);
-  game.awayTeam = createESPNTeam(gameEvent.competitions[0].competitors[1]);
+  game.homeTeam = homeTeam;
+  game.awayTeam = awayTeam;
 
   var awayId = getTeamId(game.awayTeam.abbreviation);
   var homeId = getTeamId(game.homeTeam.abbreviation);
