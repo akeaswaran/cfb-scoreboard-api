@@ -137,7 +137,7 @@ var teamNames = {
 };
 
 //App setup
-app.set('port', (process.env.PORT || 5000));
+app.set('port', (process.env.PORT || 8081));
 
 app.use(express.static(__dirname + '/public'));
 
