@@ -137,7 +137,7 @@ var teamNames = {
 };
 
 //App setup
-app.set('port', (process.env.PORT || 5000));
+app.set('port', (process.env.PORT || 8081));
 
 app.use(express.static(__dirname + '/public'));
 
@@ -228,6 +228,7 @@ function createESPNTeam(competitorDict) {
   team.abbreviation = competitorDict.team.abbreviation;
   team.displayName = competitorDict.team.displayName;
   team.color = competitorDict.team.color;
+  team.alternateColor = competitorDict.team.alternateColor;
   team.logoUrl = competitorDict.team.logo;
   team.links = {};
   if (competitorDict.team.links && competitorDict.team.links.length > 0) {
@@ -268,6 +269,10 @@ function createESPNTeam(competitorDict) {
 function createESPNGame(gameEvent) {
   var game = {};
 
+  //Teams
+  var homeTeam = createESPNTeam(gameEvent.competitions[0].competitors[0]);
+  var awayTeam = createESPNTeam(gameEvent.competitions[0].competitors[1]);
+
   //Basic game data
   game.id = gameEvent.id;
   game.season = gameEvent.season.year;
@@ -277,8 +282,12 @@ function createESPNGame(gameEvent) {
   game.venue.name = gameEvent.competitions[0].venue.fullName;
   game.venue.city = gameEvent.competitions[0].venue.address.city;
   game.venue.state = gameEvent.competitions[0].venue.address.state;
+  game.neutralSite = gameEvent.competitions[0].neutralSite;
+  game.conferenceGame = gameEvent.competitions[0].conferenceCompetition;
   if (gameEvent.competitions[0].notes && gameEvent.competitions[0].notes.length > 0) {
     game.headline = gameEvent.competitions[0].notes[0].headline;
+  } else if (gameEvent.competitions[0].competitors[0].team.location) {
+    game.headline = gameEvent.competitions[0].competitors[1].team.location + ' vs. ' + gameEvent.competitions[0].competitors[0].team.location;
   } else {
     game.headline = '';
   }
@@ -293,10 +302,28 @@ function createESPNGame(gameEvent) {
   if (game.status.type == 'STATUS_FINAL' || game.status.type == 'STATUS_SCHEDULED') {
     if (parseInt(game.scores.home) > parseInt(game.scores.away)) {
       game.winner = 'home';
+      game.winnerDetails = {};
+      game.winnerDetails.draw = 'home';
+      game.winnerDetails.id = homeTeam.id;
+      game.winnerDetails.abbreviation = homeTeam.abbreviation;
+      game.winnerDetails.location = homeTeam.location;
+      game.winnerDetails.logoUrl = homeTeam.logoUrl;
     } else if (parseInt(game.scores.home) < parseInt(game.scores.away)) {
       game.winner = 'away';
+      game.winnerDetails = {};
+      game.winnerDetails.draw = 'away';
+      game.winnerDetails.id = awayTeam.id;
+      game.winnerDetails.abbreviation = awayTeam.abbreviation;
+      game.winnerDetails.location = awayTeam.location;
+      game.winnerDetails.logoUrl = awayTeam.logoUrl;
     } else {
       game.winner = null;
+      game.winnerDetails = {};
+      game.winnerDetails.draw = null;
+      game.winnerDetails.id = null;
+      game.winnerDetails.abbreviation = null;
+      game.winnerDetails.location = null;
+      game.winnerDetails.logoUrl = null;
     }
 
     if (game.status.type == 'STATUS_FINAL') {
@@ -315,19 +342,9 @@ function createESPNGame(gameEvent) {
     }
   }
 
-  //Odds
-  game.odds = {};
-  if (gameEvent.competitions[0].odds) {
-    game.odds.spread = gameEvent.competitions[0].odds[0].details;
-    game.odds.overUnder = gameEvent.competitions[0].odds[0].overUnder;
-  } else {
-    game.odds.spread = 'N/A';
-    game.odds.overUnder = 'N/A';
-  }
-
   //Teams
-  game.homeTeam = createESPNTeam(gameEvent.competitions[0].competitors[0]);
-  game.awayTeam = createESPNTeam(gameEvent.competitions[0].competitors[1]);
+  game.homeTeam = homeTeam;
+  game.awayTeam = awayTeam;
 
   var awayId = getTeamId(game.awayTeam.abbreviation);
   var homeId = getTeamId(game.homeTeam.abbreviation);
@@ -336,6 +353,55 @@ function createESPNGame(gameEvent) {
   } else {
     game.matchupUrl = '';
   }
+
+  //Odds
+  game.odds = {};
+  if (gameEvent.competitions[0].odds) {
+    game.odds.spread = gameEvent.competitions[0].odds[0].details;
+    if (game.odds.spread.search('even') >= 0) {
+      game.odds.spreadValue = 0;
+    } else if (game.odds.spread.search(' -') < 0) {
+      game.odds.spreadValue = null;
+    } else {
+      game.odds.spreadValue = parseInt(game.odds.spread.substr(game.odds.spread.search(' -') + 2));
+    }
+    game.odds.overUnder = gameEvent.competitions[0].odds[0].overUnder;
+
+    // favorites info
+    game.odds.favorite = {};
+    if (game.odds.spread.search(game.homeTeam.abbreviation) < 0 && game.odds.spread.search(game.awayTeam.abbreviation) < 0) {
+      game.odds.favorite.id = 'N/A';
+      game.odds.favorite.abbreviation = 'N/A';
+      game.odds.favorite.location = 'N/A';
+      game.odds.favorite.logoUrl = 'N/A';
+    } else if (game.odds.spread.search(game.homeTeam.abbreviation) >= 0) {
+      game.odds.favorite.id = game.homeTeam.id;
+      game.odds.favorite.abbreviation = game.homeTeam.abbreviation;
+      game.odds.favorite.location = game.homeTeam.location;
+      game.odds.favorite.logoUrl = game.homeTeam.logoUrl;
+    } else if (game.odds.spread.search(game.awayTeam.abbreviation) >= 0) {
+      game.odds.favorite.id = game.awayTeam.id;
+      game.odds.favorite.abbreviation = game.awayTeam.abbreviation;
+      game.odds.favorite.location = game.awayTeam.location;
+      game.odds.favorite.logoUrl = game.awayTeam.logoUrl;
+    } else {
+      game.odds.favorite.id = 'N/A';
+      game.odds.favorite.abbreviation = 'N/A';
+      game.odds.favorite.location = 'N/A';
+      game.odds.favorite.logoUrl = 'N/A';
+    }
+
+  } else {
+    game.odds.spread = 'N/A';
+    game.odds.spreadValue = 'N/A';
+    game.odds.overUnder = 'N/A';
+    game.odds.favorite = {};
+    game.odds.favorite.id = 'N/A';
+    game.odds.favorite.abbreviation = 'N/A';
+    game.odds.favorite.location = 'N/A';
+    game.odds.favorite.logoUrl = 'N/A';
+  }
+
   return game;
 }
 

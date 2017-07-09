@@ -61,7 +61,7 @@
 				<h4>Sample reponse</h4>
 				<pre>
 {
-  "retrievedAt": "2016-01-10T21:53:25.101Z",
+  "retrievedAt": "2017-07-03T19:49:33.556Z",
   "url": "http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?calendartype=blacklist&dates=20160111",
   "service": "espn",
   "apiVersion": "1.0",
@@ -70,26 +70,31 @@
       "id": "400852743",
       "season": 2015,
       "date": "2016-01-12T01:30Z",
-      "attendance": 0,
+      "attendance": 75765,
       "venue": {
         "name": "University of Phoenix Stadium",
         "city": "Glendale",
         "state": "AZ"
       },
+      "neutralSite": true,
+      "conferenceGame": false,
       "headline": "CFP NATIONAL CHAMPIONSHIP GAME PRES. BY AT&T",
       "scores": {
-        "home": "0",
-        "away": "0"
+        "home": "40",
+        "away": "45"
       },
       "status": {
         "clock": "0:00",
-        "type": "STATUS_SCHEDULED",
-        "period": "S"
+        "type": "STATUS_FINAL",
+        "period": "F"
       },
-      "winner": null,
-      "odds": {
-        "spread": "ALA -6.5",
-        "overUnder": 50.5
+      "winner": "away",
+      "winnerDetails": {
+        "draw": "away",
+        "id": "333",
+        "abbreviation": "ALA",
+        "location": "Alabama",
+        "logoUrl": "http://a.espncdn.com/i/teamlogos/ncaa/500/333.png"
       },
       "homeTeam": {
         "id": "228",
@@ -98,15 +103,17 @@
         "abbreviation": "CLEM",
         "displayName": "Clemson Tigers",
         "color": "F66733",
+        "alternateColor": "522d80",
         "logoUrl": "http://a.espncdn.com/i/teamlogos/ncaa/500/228.png",
         "links": {
-          "clubhouse": "http://espn.go.com/college-football/team/_/id/228",
-          "roster": "http://espn.go.com/college-football/team/roster/_/id/228",
-          "stats": "http://espn.go.com/college-football/team/stats/_/id/228",
-          "schedule": "http://espn.go.com/college-football/team/schedule/_/id/228",
-          "photos": "http://espn.go.com/college-football/team/photos/_/id/228",
-          "stadium": "http://espn.go.com/college-football/team/stadium/_/id/228",
-          "awards": "http://espn.go.com/college-football/awards/_/team/228",
+          "clubhouse": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:23~t:228",
+          "roster": "http://www.espn.com/college-football/team/roster/_/name/clem/clemson-tigers",
+          "stats": "http://www.espn.com/college-football/team/stats/_/name/clem/clemson-tigers",
+          "schedule": "http://www.espn.com/college-football/team/schedule/_/id/228",
+          "photos": "http://www.espn.com/college-football/team/photos/_/id/228",
+          "stadium": "http://www.espn.com/college-football/team/stadium/_/id/228",
+          "scores": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:23~t:228&section=scores",
+          "awards": "http://www.espn.com/college-football/awards/_/team/228",
           "history": "https://collegefootballapi.com/api/1.0/teams/clemson",
           "details": "https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=clemson"
         },
@@ -116,7 +123,7 @@
         },
         "rank": 1,
         "records": {
-          "overall": "14-0",
+          "overall": "14-1",
           "conference": "7-0",
           "home": "5-0",
           "away": "8-0"
@@ -129,15 +136,17 @@
         "abbreviation": "ALA",
         "displayName": "Alabama Crimson Tide",
         "color": "690014",
+        "alternateColor": "f1f2f3",
         "logoUrl": "http://a.espncdn.com/i/teamlogos/ncaa/500/333.png",
         "links": {
-          "clubhouse": "http://espn.go.com/college-football/team/_/id/333",
-          "roster": "http://espn.go.com/college-football/team/roster/_/id/333",
-          "stats": "http://espn.go.com/college-football/team/stats/_/id/333",
-          "schedule": "http://espn.go.com/college-football/team/schedule/_/id/333",
-          "photos": "http://espn.go.com/college-football/team/photos/_/id/333",
-          "stadium": "http://espn.go.com/college-football/team/stadium/_/id/333",
-          "awards": "http://espn.go.com/college-football/awards/_/team/333",
+          "clubhouse": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:23~t:333",
+          "roster": "http://www.espn.com/college-football/team/roster/_/name/ala/alabama-crimson-tide",
+          "stats": "http://www.espn.com/college-football/team/stats/_/name/ala/alabama-crimson-tide",
+          "schedule": "http://www.espn.com/college-football/team/schedule/_/id/333",
+          "photos": "http://www.espn.com/college-football/team/photos/_/id/333",
+          "stadium": "http://www.espn.com/college-football/team/stadium/_/id/333",
+          "scores": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:23~t:333&section=scores",
+          "awards": "http://www.espn.com/college-football/awards/_/team/333",
           "history": "https://collegefootballapi.com/api/1.0/teams/alabama",
           "details": "https://api.fieldbook.com/v1/5674066102cb300300dfd764/teams?team_name=alabama"
         },
@@ -147,13 +156,24 @@
         },
         "rank": 2,
         "records": {
-          "overall": "13-1",
+          "overall": "14-1",
           "conference": "6-1",
           "home": "4-0",
           "away": "7-1"
         }
       },
-      "matchupUrl": "https://collegefootballapi.com/api/1.0/matchup/clemson/alabama"
+      "matchupUrl": "https://collegefootballapi.com/api/1.0/matchup/clemson/alabama",
+      "odds": {
+        "spread": "ALA -6.5",
+        "spreadValue": 6.5,
+        "overUnder": "50.5",
+        "favorite": {
+          "id": "333",
+          "abbreviation": "ALA",
+          "location": "Alabama",
+          "logoUrl": "http://a.espncdn.com/i/teamlogos/ncaa/500/333.png"
+        }
+      }
     }
   ],
   "date": "20160111"
